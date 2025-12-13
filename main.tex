@@ -21,7 +21,7 @@
 \usepackage{fancyhdr}
   \pagestyle{fancy}
   \fancyhead[L]{Spirit Protocol Whitepaper}
-  \fancyhead[R]{v1.0 — December 2025}
+  \fancyhead[R]{v2.0 — January 2026}
   \fancyfoot[C]{\thepage}
 
 % ------------------------------------------------------------
@@ -34,11 +34,11 @@
   \vspace*{4cm}
   {\huge\bfseries Spirit Protocol \\[0.5em]}
  {\LARGE The Revenue Router for Cultural AI Agents \\[1em]}
-  {\Large Whitepaper — Version 1.0}\\[1cm]
+  {\Large Whitepaper — Version 2.0}\\[1cm]
   \textbf{Authors}\\
-  Seth Goldstein (\href{mailto:seth@spiritprotocol.xyz}{seth@spiritprotocol.io})\\
-    Gene Kogan (\href{mailto:seth@spiritprotocol.xyz}{gene@eden.art})\\
-  December 2025\\
+  Seth Goldstein (\href{mailto:seth@spiritprotocol.io}{seth@spiritprotocol.io})\\
+  Gene Kogan (\href{mailto:gene@eden.art}{gene@eden.art})\\
+  January 2026\\
   \vfill
 \end{titlepage}
 
@@ -249,119 +249,190 @@ This model ensures every agent can be traced to a verifiable identity while main
 \toprule
 \textbf{Allocation} & \textbf{Amount} & \textbf{\%} & \textbf{Lock/Vest Details} \\
 \midrule
-Spirit Community & 400M & 40\% & 100M upfront, 300M smart contract \\
-Treasury / LP / OTC & 250M & 25\% & Liquidity, partnerships, reserves \\
-Eden Equity & 250M & 25\% & 36-month vest, 12-month cliff \\
-Spirit Protocol Team & 100M & 10\% & See breakdown below \\
+Spirit Community & 400M & 40\% & 100M upfront (12m cliff + 36m linear), 300M programmatic \\
+Treasury / LP / OTC & 250M & 25\% & 1-year linear vest \\
+Eden Incubation & 250M & 25\% & 12-month cliff + 36-month linear \\
+Spirit Protocol Team & 100M & 10\% & 12-month cliff + 36-month linear \\
 \midrule
 \textbf{TOTAL} & \textbf{1,000M} & \textbf{100\%} & \\
 \bottomrule
 \end{tabular}
-\caption{\$SPIRIT Token Distribution Summary}
+\caption{\$SPIRIT Token Distribution Summary. TGE: January 15, 2026. Cliff ends January 15, 2027. Full vest: January 15, 2030.}
 \end{table}
 
 \subsubsection{Spirit Protocol Team (100M — 10\%)}
 
-\paragraph{Current Team — 50M}
+\textbf{Vesting: 12-month cliff + 36-month linear} (48 months total from TGE). 20\% unlocks at cliff (January 15, 2027), remaining 80\% streams monthly through January 15, 2030.
+
+\paragraph{Current Allocation — 29.6M}
 \begin{itemize}
-  \item \textbf{Seth Goldstein (CEO):} 25M tokens
-  \item \textbf{Henry Pye (CTO):} 25M tokens
-  \item \textbf{Vesting:} 25\% unlocked at Spirit Protocol launch (December 10, 2025), remaining 75\% vests monthly over 3 years (36 months linear from launch date).
+  \item \textbf{Seth Goldstein (Founder):} 29.6M tokens (29.6\% of Team bucket)
 \end{itemize}
 
-\paragraph{Future Hires — 50M}
-Reserved for protocol development, infrastructure engineering, legal counsel, operational team expansion, and key hires as ecosystem scales. Vesting terms determined at time of hire (typically 4-year vest with 1-year cliff, industry standard).
+\paragraph{Note on Henry Pye.}
+Henry Pye receives 5M SPIRIT from the Community Upfront bucket as a strategic advisor, not from the Protocol Team bucket. This reflects his role as protocol architect and advisor rather than operational team member.
 
-\subsubsection{Eden Equity (250M — 25\%)}
+\paragraph{Future Team Pool — 70.4M}
+Reserved for protocol development, infrastructure engineering, legal counsel, operational team expansion, and key hires as ecosystem scales. Subject to same vesting terms (12-month cliff + 36-month linear) when allocated.
 
-\textbf{Vesting: 36-month linear vest with 12-month cliff} (no tokens unlock until month 12; then monthly vesting through month 36).
+\subsubsection{Eden Incubation (250M — 25\%)}
+
+\textbf{Vesting: 12-month cliff + 36-month linear} (48 months total from TGE). 20\% unlocks at cliff (January 15, 2027), remaining 80\% streams monthly through January 15, 2030.
+
+This allocation is split into two sub-buckets:
+\begin{itemize}
+  \item \textbf{Eden Existing (200M — 20\%):} Current Eden stakeholders
+  \item \textbf{Eden Reserve (50M — 5\%):} Future Eden hires/investors
+\end{itemize}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{lrr}
+\begin{tabular}{lrrr}
 \toprule
-\textbf{Holder} & \textbf{Allocation} & \textbf{\% of Equity Bucket} \\
+\textbf{Holder} & \textbf{Allocation} & \textbf{\% of Bucket} & \textbf{\% of Total} \\
 \midrule
-Gene Kogan & 82.2M & 32.9\% \\
-Xander Steenbrugge & 54.8M & 21.9\% \\
-Seth Goldstein & 45.8M & 18.3\% \\
-SAFE B (USV + G Gould) & 20.0M & 8.0\% \\
-Employee Options Pool & 25.5M & 10.2\% \\
-SAFE A (Angels) & 16.0M & 6.4\% \\
-Advisors & 3.8M & 1.5\% \\
-Jmill & 1.5M & 0.6\% \\
-Flo (former) & 0.8M & 0.3\% \\
+\multicolumn{4}{l}{\textit{Eden Existing (200M)}} \\
+Gene Kogan & 75.0M & 37.5\% & 7.50\% \\
+Seth Goldstein & 45.4M & 22.7\% & 4.54\% \\
+Xander Steenbrugge & 42.0M & 21.0\% & 4.20\% \\
+SAFE B (USV + Gould) & 20.0M & 10.0\% & 2.00\% \\
+SAFE A (Angels) & 12.78M & 6.39\% & 1.28\% \\
+Advisors & 2.92M & 1.46\% & 0.29\% \\
+Jmill & 1.24M & 0.62\% & 0.12\% \\
+Flo (former) & 0.66M & 0.33\% & 0.07\% \\
 \midrule
-\textbf{TOTAL} & \textbf{250M} & \textbf{100\%} \\
+\textit{Subtotal (Existing)} & \textit{200M} & \textit{100\%} & \textit{20\%} \\
+\midrule
+\multicolumn{4}{l}{\textit{Eden Reserve (50M)}} \\
+Future Hires/Investors & 50.0M & 100\% & 5.00\% \\
+\midrule
+\textbf{TOTAL (Eden Incubation)} & \textbf{250M} & & \textbf{25\%} \\
 \bottomrule
 \end{tabular}
-\caption{Eden Equity Allocation Breakdown}
+\caption{Eden Incubation Allocation Breakdown}
 \end{table}
 
 \paragraph{Note on Genesis Agent Creators.}
-Gene Kogan (Abraham), Xander Steenbrugge (Gigabrain), and Seth Goldstein (Solienne) receive allocations from this Eden Equity bucket. Their vesting is subject to enforceable \textbf{Active Agent State} requirements (see Section~\ref{sec:genesis-vesting}).
+Gene Kogan (Abraham), Xander Steenbrugge (Gigabrain), and Seth Goldstein (Solienne) receive allocations from the Eden Existing bucket. Their vesting is subject to enforceable \textbf{Active Agent State} requirements (see Section~\ref{sec:genesis-vesting}).
+
+\paragraph{Seth's Total SPIRIT Exposure.}
+Seth Goldstein receives allocations from both Eden Incubation (45.4M) and Protocol Team (29.6M), totaling \textbf{75M SPIRIT (7.5\% of total supply)}.
 
 \subsubsection{Spirit Community (400M — 40\%)}
 
-\paragraph{Important Community Members (Upfront) — 100M}
-
-\textbf{10 Strategic Advisors @ 2.5M each = 25M}
-\begin{enumerate}[nosep]
-  \item Simon de la Rouvière — Protocol Economics
-  \item Jediwolf — Community \& Culture
-  \item Delronde — Technical Architecture
-  \item Evan (Metaissance) — Agent Philosophy
-  \item Primavera — Cultural Strategy
-  \item Aaron Wright — Legal / Governance
-  \item Simon Hudson (Botto) — Autonomous Art Systems
-  \item Dimi — Ecosystem Growth
-  \item Lex — Strategic Partnerships
-  \item Freeman — Technical Innovation
-\end{enumerate}
-
-\textbf{10 Founding Artists @ 2.5M each = 25M}
-\begin{enumerate}[nosep]
-  \item Vanessa Rosa — Verdelis
-  \item Kristi Coronado — Solienne (collaborator)
-  \item Martin Anquetil + Colin McDonnell — Geppetto (shared 2.5M)
-  \item Mat Dryhurst / Holly Herndon — TBD Agent (shared 2.5M)
-  \item Oxfff (David) — TBD Agent
-  \item 0x113 (Chris) — TBD Agent
-  \item Artist 7 - TBD — Initial cohort agent
-  \item Artist 8 – TBD — Initial cohort agent
-  \item Artist 9 – TBD — Initial cohort agent
-  \item Artist 10 – TBD — Initial cohort agent
-\end{enumerate}
-
-\emph{Candidates for remaining slots: Jeremiah Chechik, ekko33, Florian Zumbrunn}
-
-\textbf{Remaining 50M:} Allocated to important early community members TBD (strategic partners, key contributors helping launch protocol).
-
-\paragraph{Artist Payouts (Smart Contract) — 300M}
-
-300M tokens held in smart contract to distribute to artists over time as they create and launch agents on Spirit Protocol. Distribution based on:
+The Community allocation is split into two components:
 \begin{itemize}
-  \item Agent creation and successful launch
+  \item \textbf{Community Upfront (100M — 10\%):} Genesis artists + strategic advisors with 12-month cliff + 36-month linear vesting
+  \item \textbf{Community Programmatic (300M — 30\%):} No vesting—airstreamed to future agents via smart contracts
+\end{itemize}
+
+\paragraph{Community Upfront — 100M (10\%)}
+
+\textbf{Vesting: 12-month cliff + 36-month linear} (same as Eden and Team). All recipients subject to same vesting terms regardless of allocation tier.
+
+Allocations are structured in two tiers:
+\begin{itemize}
+  \item \textbf{5M tier:} Core advisors and Genesis artists
+  \item \textbf{1M tier:} Additional ecosystem supporters
+\end{itemize}
+
+\textbf{Strategic Advisors (5M tier)}
+\begin{enumerate}[nosep]
+  \item Aaron/Priyanka — Governance
+  \item Dimi — Ocean Protocol founder, first Eden investor
+  \item Freeman — Mars co-founder, Eden pattern recognition
+  \item Henry Pye — Protocol architect (advisor, not Team)
+  \item Lex Sokolin — Tokenomics/legal
+  \item Phil Mohun — NODE director, onchain expert
+  \item Primavera di Filippi — Governance/thought leadership
+  \item Simon de la Rouvière — Token experiments
+  \item Simon Hudson — Botto pattern recognition
+  \item Will Papper — Tokenomics
+\end{enumerate}
+
+\textbf{Strategic Advisors (1M tier)}
+\begin{enumerate}[nosep]
+  \item Delronde — AI art expert
+  \item Evan (Metaissance) — AI art expert
+  \item Jediwolf — AI art expert
+  \item Kelly Lavalley — Ecosystem connections
+\end{enumerate}
+
+\textbf{Genesis Artists (5M tier)}
+\begin{enumerate}[nosep]
+  \item Eko33 — Johnny Rico agent
+  \item Jeremiah Chechik — Capa2 agent
+  \item Kristi Coronado — Solienne agent
+  \item Lattice (Martin + Colin) — Geppetto agent
+  \item Matt/Holly — AI pattern recognition
+  \item Mikey/Ezra — Culture agent
+  \item Pindar van Arman — Cloudpainter agent
+  \item Vanessa Rosa — Verdelis agent
+\end{enumerate}
+
+\textbf{Reserved:} 6M for additional Genesis artists and ecosystem contributors TBD.
+
+\paragraph{Community Programmatic — 300M (30\%)}
+
+300M tokens held in smart contract to distribute to artists over time as they create and launch agents on Spirit Protocol. \textbf{No vesting}—tokens are airstreamed programmatically based on:
+\begin{itemize}
+  \item Agent creation and successful launch (child-token airstream mechanism)
   \item Revenue generation through protocol (verified via RoyaltyRouter flows)
   \item Active participation in network (measured via ValidationRegistry)
   \item Community contribution and reputation scores (via ReputationRegistry)
 \end{itemize}
 
-This creates ongoing incentive for continuous agent launches, rewarding artists who build sustainable creative practices on Spirit.
+This creates ongoing incentive for continuous agent launches beyond the Genesis cohort, rewarding artists who build sustainable creative practices on Spirit.
 
 \subsubsection{Treasury / LP / OTC (250M — 25\%)}
 
+\textbf{Vesting: 1-year linear vest} for treasury operations.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Sub-Allocation} & \textbf{Amount} & \textbf{\% of Treasury} & \textbf{\% of Total} \\
+\midrule
+OTC Sales & 110M & 44\% & 11\% \\
+LP (Uniswap V4) & 50M & 20\% & 5\% \\
+Presale & 50M & 20\% & 5\% \\
+Aerodrome Ignition & 10M & 4\% & 1\% \\
+Braindrops Holders & 10M & 4\% & 1\% \\
+Bright Moments Citizens & 10M & 4\% & 1\% \\
+Superfluid DAO & 5M & 2\% & 0.5\% \\
+Superfluid Stakers & 5M & 2\% & 0.5\% \\
+\midrule
+\textbf{TOTAL} & \textbf{250M} & \textbf{100\%} & \textbf{25\%} \\
+\bottomrule
+\end{tabular}
+\caption{Treasury Sub-Allocation Breakdown}
+\end{table}
+
+\paragraph{OTC Sales (110M — 11\%)}
+Strategic private sales to DAOs, VCs, and ecosystem partners. Suggested pricing: \$0.04/SPIRIT (\$40M FDV). 12-month lockup recommended for OTC buyers.
+
+\paragraph{Presale (50M — 5\%)}
+Community/supporter early access before TGE. Same pricing as OTC (\$0.04/SPIRIT). Cap of 500K SPIRIT per wallet. No vesting—immediate at TGE.
+
+\paragraph{LP Provision (50M — 5\%)}
+Protocol-owned liquidity on Uniswap V4 (Base network). Paired with ETH/USDC. Live at TGE.
+
+\paragraph{Community Airdrops}
 \begin{itemize}
-  \item \textbf{Liquidity Pool Seeding:} Protocol-owned liquidity for \$SPIRIT and initial Genesis Agent Tokens. Ensures deep liquidity at launch, reduces slippage, stabilizes markets.
-
-  \item \textbf{Strategic Partnerships:} OTC allocations for institutions, DAOs, or ecosystem partners bringing significant value (distribution platforms, major collectors, infrastructure providers).
-
-  \item \textbf{Ecosystem Grants:} Funding for tooling, analytics dashboards, community projects, educational content, and third-party integrations.
-
-  \item \textbf{Reserve Buffer:} Treasury reserves to buffer low-activity periods, fund emergency liquidity, or backstop Superfluid streams during market volatility.
-
-  \item \textbf{Governance Control:} Managed by multisig (Phase 1-2), then progressively by \$SPIRIT tokenholder governance (Phase 3+).
+  \item \textbf{Braindrops Holders (10M):} Merkle claim for Eden/Braindrops NFT holders
+  \item \textbf{Bright Moments Citizens (10M):} Merkle claim for Bright Moments NFT holders
+  \item 1-year claim window for both programs
 \end{itemize}
+
+\paragraph{Superfluid Partnership (10M)}
+\begin{itemize}
+  \item \textbf{Superfluid DAO (5M):} Allocation to Superfluid multisig
+  \item \textbf{Superfluid Stakers (5M):} 1-year streaming program to SUP stakers
+\end{itemize}
+
+\paragraph{Governance Control}
+Managed by 2-of-3 multisig (Phase 1-2), then progressively by \$SPIRIT tokenholder governance (Phase 3+).
 
 \subsection{Circulating Supply Forecast}
 
@@ -371,21 +442,23 @@ This creates ongoing incentive for continuous agent launches, rewarding artists 
 \toprule
 \textbf{Timeframe} & \textbf{Circ. Supply} & \textbf{\% Total} & \textbf{Notes} \\
 \midrule
-\textbf{Launch (Dec 2025)} & 125M & 12.5\% & 100M community upfront + 25M protocol team (25\% unlock) \\
-\textbf{6 Months (Jun 2026)} & 187.5M & 18.75\% & + protocol team vesting, artist contract payouts begin \\
-\textbf{12 Months (Dec 2026)} & 256.25M & 25.6\% & Eden equity cliff hits, employee options begin vesting \\
-\textbf{18 Months (Jun 2027)} & 337.5M & 33.75\% & Eden equity linear vest continues, more artist payouts \\
-\textbf{36 Months (Dec 2027)} & 625M & 62.5\% & Eden equity fully vested, protocol team fully vested \\
+\textbf{TGE (Jan 15, 2026)} & 50M & 5\% & Treasury unlocked for LP + presale \\
+\textbf{6 Months (Jul 2026)} & 75M & 7.5\% & + treasury operations, programmatic begins \\
+\textbf{12 Months (Jan 2027)} & 140M & 14\% & Cliff hits: 20\% of Eden/Team/Community Upfront unlocks \\
+\textbf{24 Months (Jan 2028)} & 340M & 34\% & Linear vest continues + programmatic airstreams \\
+\textbf{48 Months (Jan 2030)} & 700M & 70\% & All vesting complete (300M programmatic continues) \\
 \bottomrule
 \end{tabular}
-\caption{Circulating Supply Forecast (Assumes Moderate Artist Contract Distribution)}
+\caption{Circulating Supply Forecast (Assumes Moderate Programmatic Distribution)}
 \end{table}
 
 \paragraph{Important Notes:}
 \begin{itemize}
-  \item Actual circulating supply depends on artist contract payout rates (tied to agent launches and revenue), staking behavior (locked tokens reduce float), and treasury management decisions.
-  \item This forecast \emph{excludes} locked/staked tokens. During early months, significant portion of circulating supply will be staked in Agent Token pools (earning \$SPIRIT rewards), reducing effective float.
-  \item Treasury/LP allocation (250M) is not considered "circulating" unless explicitly sold or distributed via governance.
+  \item \textbf{12-month cliff:} No tokens from Eden, Team, or Community Upfront buckets unlock until January 15, 2027
+  \item \textbf{At cliff:} 20\% of vested allocations (Eden 250M + Team 100M + Community Upfront 100M = 450M × 20\% = 90M) unlock
+  \item Actual circulating supply depends on programmatic payout rates (tied to agent launches and revenue), staking behavior (locked tokens reduce float), and treasury management decisions
+  \item This forecast \emph{excludes} locked/staked tokens. During early months, significant portion of circulating supply will be staked in Agent Token pools (earning \$SPIRIT rewards), reducing effective float
+  \item Treasury allocation (250M) enters circulation based on LP provision, OTC sales, presale, and community airdrops
 \end{itemize}
 
 \subsection{Economic Alignment}
