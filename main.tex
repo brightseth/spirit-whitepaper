@@ -21,7 +21,7 @@
 \usepackage{fancyhdr}
   \pagestyle{fancy}
   \fancyhead[L]{Spirit Protocol Whitepaper}
-  \fancyhead[R]{v1.0-rc8 --- Q1 2026}
+  \fancyhead[R]{v1.0-rc9 --- Q1 2026}
   \fancyfoot[C]{\thepage}
 
 % ------------------------------------------------------------
@@ -34,7 +34,7 @@
   \vspace*{4cm}
   {\huge\bfseries Spirit Protocol \\[0.5em]}
   {\LARGE The Sovereignty Layer for Cultural Agents \\[1em]}
-  {\Large Whitepaper --- Version 1.0-rc8}\\[1cm]
+  {\Large Whitepaper --- Version 1.0-rc9}\\[1cm]
   \textbf{Authors}\\
   Seth Goldstein (\href{mailto:seth@spiritprotocol.io}{seth@spiritprotocol.io})\\
   Founder of Spirit Protocol. Artist advocate focused on sustainable creator economics.\\[0.5em]
@@ -123,6 +123,42 @@ Spirit is also the successor to the Web2 creator economy. Platforms like Kicksta
 When a Patreon creator stops working, the revenue stops. When a Spirit creator trains an agent, the revenue continues, the practice evolves, and the entity persists.
 
 \textbf{Platforms come and go. Spirit routes the revenue regardless.}
+
+\subsection{Interoperability: Spirit's Position in the Agent Stack}
+
+Spirit is the \textbf{economic layer} for autonomous agents. It integrates with---rather than replaces---emerging standards for identity and communication:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Layer} & \textbf{Standard} & \textbf{Spirit's Role} \\
+\midrule
+Discovery \& Identity & ERC-8004 & Spirit agents are ERC-8004 compatible. Portable. \\
+Communication & A2A / MCP & Agent messaging and tool protocols. Orthogonal. \\
+Economics & Spirit Router & Revenue routing, staking, treasury. The missing layer. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Spirit doesn't reinvent identity or communication.} ERC-8004 provides agent identity registries and validation. A2A and MCP handle agent-to-agent messaging and tool protocols. Spirit provides the economic substrate that lets agents accumulate resources, align incentives, and persist independently of any single platform.
+
+This layering is intentional: Spirit is complementary to, not competitive with, agent infrastructure standards.
+
+\subsection{Model-Agnostic Design}
+
+Spirit is intentionally architecture-agnostic:
+\begin{itemize}[nosep]
+  \item \textbf{Works with any AI architecture:} LLMs, diffusion models, multimodal systems, future architectures.
+  \item \textbf{Identity persists across upgrades:} When an agent upgrades models, the Spirit identity, treasury, and token remain continuous.
+  \item \textbf{Treasury funds evolution:} Agent wallets accumulate resources for better models, more memory, new capabilities.
+  \item \textbf{No creativity assumptions:} Spirit does not assume current AI ``solves'' creativity. Spirit provides economic continuity as capabilities evolve.
+\end{itemize}
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{\centering
+\textbf{Spirit does not depend on any single AI architecture.} When better systems emerge, Spirit routes the revenue to fund them.
+}}
+\end{center}
 
 \newpage
 % ============================================================
