@@ -310,16 +310,16 @@ Any agent economy that does not coordinate all four parties will eventually frag
 
 \subsection{Why Community Coordination Matters}
 
-A common question: \textit{Why include a coordination pool? Why not just split between Artist, Agent, and Platform?}
+A common question: \textit{Why include a protocol treasury? Why not just split between Artist, Agent, and Platform?}
 
 The answer is \textbf{bootstrapping and sustainability}.
 
-\textbf{What the coordination pool provides:}
+\textbf{What the Spirit Treasury provides:}
 \begin{enumerate}[nosep]
-  \item \textbf{Liquidity Bootstrapping:} When a new agent launches, someone must provide initial liquidity for its token. The coordination pool seeds this liquidity, enabling price discovery without requiring the artist to provide capital.
+  \item \textbf{Liquidity Bootstrapping:} When a new agent launches, someone must provide initial liquidity for its token. The treasury seeds this liquidity, enabling price discovery without requiring the artist to provide capital.
   \item \textbf{Quality Signaling:} SPIRIT holders who participate in governance signal which agents they believe in. This creates a distributed curation layer---not algorithmic, not centralized, but community-driven.
-  \item \textbf{Ecosystem Development:} Protocol upgrades, security audits, new integrations, and developer grants require funding. The coordination pool provides this without requiring artists to pay fees or platforms to subsidize.
-  \item \textbf{Cold Start Solution:} By seeding liquidity and streaming incentives, the coordination pool ensures an agent's economic life begins immediately upon deployment.
+  \item \textbf{Ecosystem Development:} Protocol upgrades, security audits, new integrations, and developer grants require funding. The treasury provides this without requiring artists to pay fees or platforms to subsidize.
+  \item \textbf{Cold Start Solution:} By seeding liquidity, the treasury ensures an agent's economic life begins immediately upon deployment.
 \end{enumerate}
 
 \textbf{What SPIRIT holders actually do:}
@@ -332,7 +332,9 @@ SPIRIT is a \textbf{governance token}. Holders participate in protocol decisions
   \item Propose and vote on protocol upgrades
 \end{itemize}
 
-Holders who stake agent tokens are signaling long-term commitment to that agent's success. In return, they receive SPIRIT from the coordination pool---not as profit distribution, but as recognition of their coordination contribution.
+Holders who stake agent tokens are signaling long-term commitment to that agent's success. In return, they receive SPIRIT governance incentives from the predetermined emission schedule---not as profit distribution, but as recognition of their coordination contribution.
+
+\textbf{Note:} Protocol revenue (25\%) flows to Spirit Treasury for ecosystem coordination---not distributed directly to stakers. This is distinct from SPIRIT governance incentives, which come from the Community Programmatic allocation.
 
 \textbf{This is governance participation, not passive investment.}
 
@@ -346,14 +348,14 @@ Holders who stake agent tokens are signaling long-term commitment to that agent'
     \item 0.125 ETH $\rightarrow$ Gene Kogan (Artist)
     \item 0.125 ETH $\rightarrow$ Abraham Treasury (Agent)
     \item 0.125 ETH $\rightarrow$ Eden (Platform)
-    \item 0.125 ETH $\rightarrow$ Protocol Coordination Pool
+    \item 0.125 ETH $\rightarrow$ Spirit Treasury
   \end{itemize}
-  \item Coordination Pool swaps ETH for SPIRIT (via Uniswap)
-  \item SPIRIT streams to governance participants via Superfluid
-  \item Participants receive proportional to (stake $\times$ commitment)
+  \item Spirit Treasury accumulates protocol revenue
+  \item Treasury governed by SPIRIT holders (grants, liquidity, development)
+  \item NOT distributed directly to stakers---funds coordination, not passive income
 \end{enumerate}
 
-No human approval. No delay. Same block. The ETH-to-SPIRIT swap uses the protocol's Uniswap liquidity pool, creating buying pressure on SPIRIT with each agent sale.
+No human approval. No delay. Same block.
 
 \subsection{The Dual-Token Model}
 
@@ -421,9 +423,8 @@ Every time revenue is attributed to an agent, the Royalty Router smart contract 
   \item Artist receives their share directly
   \item Agent wallet receives its share
   \item Platform receives its share
-  \item Protocol portion goes to Coordination Pool
-  \item Coordination Pool distributes to governance participants
-  \item Participants receive SPIRIT (streamed continuously via Superfluid)
+  \item Protocol portion goes to Spirit Treasury
+  \item Treasury governed by SPIRIT holders for ecosystem coordination
 \end{enumerate}
 
 \textbf{There is no manual step. No delay. No approval queue.}
@@ -474,7 +475,7 @@ This prevents day-one selling by the people closest to the project. Artists rece
 
 \subsection{The Flywheel}
 
-The flywheel effect is not designed into Spirit---it emerges from the interaction of the components created by \texttt{spirit.createAgent()}. When agents generate revenue, that revenue flows through the four-party split, funding evolution (Agent wallet), rewarding participation (Staking), and growing the ecosystem (Treasury).
+The flywheel effect is not designed into Spirit---it emerges from the interaction of the components created by \texttt{spirit.createAgent()}. When agents generate revenue, that revenue flows through the four-party split: funding evolution (Agent wallet), compensating creators (Artist), supporting infrastructure (Platform), and growing the ecosystem (Spirit Treasury).
 
 \textbf{The emergent cycle:}
 \begin{enumerate}[nosep]
@@ -522,7 +523,7 @@ Under US securities law (the Howey test), a security requires expectation of pro
 \begin{itemize}[nosep]
   \item \textbf{Active participation required.} Governance incentives go to participants who stake and vote---not passive holders. Holding alone generates nothing.
   \item \textbf{No central promoter.} Value comes from the collective activity of artists, platforms, agents, and community members---not from the efforts of a central team.
-  \item \textbf{No profit-sharing.} The coordination pool distributes SPIRIT tokens as participation-conditioned protocol emissions, not as dividends or profit shares.
+  \item \textbf{No profit-sharing.} Protocol revenue flows to Spirit Treasury for ecosystem coordination, not distributed to stakers. SPIRIT governance incentives come from predetermined emission schedules, not profit shares.
 \end{itemize}
 
 Governance participation is optional, uncompensated, and may result in outcomes adverse to individual token holders.
@@ -776,7 +777,7 @@ Spirit Protocol consists of six core smart contracts deployed on Base (Ethereum 
 \texttt{ChildSuperToken.sol} & Per-agent token (1B each), created via SpiritFactory \\
 \texttt{StakingPool.sol} & Superfluid GDA pool for staking agent tokens and receiving SPIRIT governance incentives \\
 \texttt{SpiritFactory.sol} & Creates child tokens, staking pools, LP positions, and airstreams \\
-\texttt{RewardController.sol} & Routes SPIRIT to staking pools based on agent revenue \\
+\texttt{RewardController.sol} & Allocates SPIRIT governance incentives to staking pools (from emission schedule, not revenue) \\
 \texttt{SpiritVestingFactory.sol} & Creates time-locked vesting contracts for team/advisor allocations \\
 \bottomrule
 \end{tabular}
@@ -920,6 +921,8 @@ When \texttt{SpiritFactory.createChild()} is called:
 \toprule
 \textbf{Contract} & \textbf{Address} \\
 \midrule
+Spirit Registry & \texttt{0x4a0e642e9aec25c5856987e95c0410ae10e8de5e} \\
+Royalty Router & \texttt{0x271bf11777ff7cbb9d938d2122d01493f6e9fc21} \\
 SPIRIT Token & \texttt{0xc7e9de362C6eA2Cc03863ECe330622146Ff1c18B} \\
 Reward Controller & \texttt{0x1390A073a765D0e0D21a382F4F6F0289b69BE33C} \\
 Staking Pool Beacon & \texttt{0x6A96aC9BAF36F8e8b6237eb402d07451217C7540} \\
@@ -929,7 +932,9 @@ Vesting Factory & \texttt{0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe} \\
 \end{tabular}
 \end{center}
 
-\textit{Note: Mainnet addresses will be published at TGE.}
+\textit{Note: Mainnet addresses will be published at TGE. SDK is live on npm for testnet integration.}
+
+\textit{Testnet proof pack:} \url{https://github.com/spirit-protocol/spirit-onboarding-demo}
 
 \subsection*{A.9 Security}
 
@@ -977,6 +982,15 @@ Agent identities and treasuries persist onchain regardless of platform status. I
 \subsection*{B.5 Why Base instead of Ethereum mainnet?}
 
 Lower transaction costs enable the continuous micro-streaming that makes Spirit's economics work. A \$0.50 Superfluid stream update is viable on Base; it would cost \$5-50 on mainnet. Base also inherits Ethereum's security through rollup architecture.
+
+\subsection*{B.6 What are the autonomy thresholds?}
+
+Spirit uses a three-phase autonomy ladder. Thresholds are provisional and may be adjusted by governance prior to mainnet launch.
+\begin{itemize}[nosep]
+  \item \textbf{Phase 1 (Guided):} Registration complete, 2/2 multisig, no self-spend.
+  \item \textbf{Phase 2 (Participatory):} \$10K treasury balance + 6 months operation, 2/3 multisig, \$500/month self-spend.
+  \item \textbf{Phase 3 (Independent):} \$50K treasury balance + 18 months operation, 1/1 control, full autonomy.
+\end{itemize}
 
 \subsection*{B.6 How do fiat payments work?}
 
