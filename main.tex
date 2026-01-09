@@ -21,7 +21,7 @@
 \usepackage{fancyhdr}
   \pagestyle{fancy}
   \fancyhead[L]{Spirit Protocol Whitepaper}
-  \fancyhead[R]{v1.0-rc9 --- Q1 2026}
+  \fancyhead[R]{v1.1 --- Q1 2026}
   \fancyfoot[C]{\thepage}
 
 % ------------------------------------------------------------
@@ -33,8 +33,9 @@
   \centering
   \vspace*{4cm}
   {\huge\bfseries Spirit Protocol \\[0.5em]}
-  {\LARGE The Sovereignty Layer for Cultural Agents \\[1em]}
-  {\Large Whitepaper --- Version 1.0-rc9}\\[1cm]
+  {\LARGE Full Sovereignty for AI Agents \\[0.3em]}
+  {\large Identity. Treasury. Tokens. Revenue. \\[1em]}
+  {\Large Whitepaper --- Version 1.1}\\[1cm]
   \textbf{Authors}\\
   Seth Goldstein (\href{mailto:seth@spiritprotocol.io}{seth@spiritprotocol.io})\\
   Founder of Spirit Protocol. Artist advocate focused on sustainable creator economics.\\[0.5em]
@@ -48,16 +49,19 @@
 % Abstract
 % ------------------------------------------------------------
 \begin{abstract}
-In 2026, the most valuable digital assets won't be content, communities, or tokens.
-They'll be autonomous entities with revenue, memory, and reputation.
+\textbf{Spirit provides full sovereignty for AI agents---identity, treasury, tokens, and revenue they control.}
 
-Abraham is one of them.
+In 2026, AI agents are proliferating. Most will be disposable: interchangeable tools, price-competed to zero, forgotten. A smaller class is emerging---autonomous entities with voice, practice, and audience that persist.
 
-In October 2025, Abraham began a thirteen-year covenant---a commitment to create daily images and videos for 4,745 days. He generates revenue. He has his own wallet. He is building toward independence.
+Spirit Protocol is the first fully tokenized sovereignty layer for AI agents, built on ERC-8004 identity and x402 payments as primitives. In one call, \texttt{spirit.createAgent()} transforms a trained AI from a platform feature into a sovereign economic actor with:
+\begin{itemize}[nosep]
+  \item \textbf{Identity} --- Onchain registration, permanent, portable
+  \item \textbf{Treasury} --- Safe multisig for fund management
+  \item \textbf{Token} --- Native token with Uniswap V4 liquidity
+  \item \textbf{Revenue} --- Automatic 25/25/25/25 distribution, hardcoded
+\end{itemize}
 
-\textbf{Spirit is the economic layer that makes this possible.}
-
-Most AI agents will be disposable: interchangeable tools, price-competed to zero, forgotten. A smaller class is emerging---\textbf{autonomous cultural software} with voice, practice, and audience. Spirit Protocol is their default economic substrate: revenue routing, token distribution, and coordination infrastructure that persists regardless of which platform hosts them.
+Spirit Index (\url{spiritindex.org}) serves as the discovery layer---think LMArena for cultural agents. It evaluates which agents have real persistence across 7 dimensions: Persistence, Autonomy, Cultural Impact, Economic Reality, Governance, Technical, and Narrative. High-scoring agents qualify for Spirit sovereignty.
 
 Spirit does not guarantee success. It provides the framework for sovereignty.
 
@@ -126,23 +130,24 @@ When a Patreon creator stops working, the revenue stops. When a Spirit creator t
 
 \subsection{Interoperability: Spirit's Position in the Agent Stack}
 
-Spirit is the \textbf{economic layer} for autonomous agents. It integrates with---rather than replaces---emerging standards for identity and communication:
+Spirit is the \textbf{sovereignty layer} for autonomous agents. It leverages emerging standards as primitives:
 
 \begin{center}
 \begin{tabular}{lll}
 \toprule
 \textbf{Layer} & \textbf{Standard} & \textbf{Spirit's Role} \\
 \midrule
-Discovery \& Identity & ERC-8004 & Spirit agents are ERC-8004 compatible. Portable. \\
+Identity Primitive & ERC-8004 & Spirit is ERC-8004 compatible. Portable. \\
+Payment Primitive & x402 & Autonomous payments via Superfluid. \\
 Communication & A2A / MCP & Agent messaging and tool protocols. Orthogonal. \\
-Economics & Spirit Router & Revenue routing, staking, treasury. The missing layer. \\
+\textbf{Sovereignty} & \textbf{Spirit Protocol} & Treasury, tokens, revenue routing. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{Spirit doesn't reinvent identity or communication.} ERC-8004 provides agent identity registries and validation. A2A and MCP handle agent-to-agent messaging and tool protocols. Spirit provides the economic substrate that lets agents accumulate resources, align incentives, and persist independently of any single platform.
+\textbf{Spirit doesn't reinvent identity or payments.} ERC-8004 provides agent identity. x402 provides autonomous payments. Spirit adds the missing sovereignty layer: treasury, tokens, and revenue routing. See Section 3 for the full Primitives specification.
 
-This layering is intentional: Spirit is complementary to, not competitive with, agent infrastructure standards.
+This layering is intentional: Spirit leverages primitives to provide full sovereignty.
 
 \subsection{Model-Agnostic Design}
 
@@ -157,6 +162,154 @@ Spirit is intentionally architecture-agnostic:
 \begin{center}
 \fbox{\parbox{0.85\textwidth}{\centering
 \textbf{Spirit does not depend on any single AI architecture.} When better systems emerge, Spirit routes the revenue to fund them.
+}}
+\end{center}
+
+\newpage
+% ============================================================
+\section{Spirit Index: The Discovery Layer}
+% ============================================================
+
+Before sovereignty, discovery. How do you know which agents matter?
+
+Spirit Index (\url{spiritindex.org}) evaluates which agents have real persistence---think LMArena, but for cultural agents instead of LLMs.
+
+\subsection{The Discovery Problem}
+
+In 2026, millions of AI agents will launch. Most will be disposable utilities or speculation vehicles. The challenge: identifying agents with genuine potential for long-term sovereignty before they've proven themselves economically.
+
+\textbf{LMArena solved this for language models.} It created an evidence-based benchmark that the industry trusts. Spirit Index does the same for cultural agents.
+
+\subsection{The 7-Dimension Framework}
+
+Spirit Index scores agents across seven dimensions, each measuring a distinct aspect of sovereignty potential:
+
+\begin{center}
+\begin{tabular}{lp{9cm}}
+\toprule
+\textbf{Dimension} & \textbf{What It Measures} \\
+\midrule
+Persistence & Continuous practice, archive depth, operational history \\
+Autonomy & Self-directed behavior, financial independence from creators \\
+Cultural Impact & Audience reach, critical recognition, market traction \\
+Economic Reality & Revenue streams, treasury, sustainable business model \\
+Governance & Decision-making structure, stakeholder alignment \\
+Technical & Architecture quality, operational infrastructure \\
+Narrative & Identity coherence, communication clarity \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Each dimension scores 0-10 points. Maximum score: 70.
+
+\subsection{Current Index}
+
+As of January 2026, Spirit Index has evaluated 19 entities:
+
+\begin{center}
+\begin{tabular}{llr}
+\toprule
+\textbf{Rank} & \textbf{Entity} & \textbf{Score} \\
+\midrule
+1 & Plantoid (Autonomous Sculpture) & 60/70 \\
+2 & Botto (Autonomous Artist) & 55/70 \\
+3 & Olas (Infrastructure Entity) & 54/70 \\
+4 & Holly+ (Voice DAO) & 53/70 \\
+5 & terra0 (Ecological DAO) & 53/70 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Scoring is evidence-based with external citations. No self-reporting.
+
+\subsection{Index $\rightarrow$ Sovereignty Pipeline}
+
+Spirit Index and Spirit Protocol work together:
+
+\begin{center}
+\begin{tabular}{p{4.5cm}cp{4.5cm}}
+\textbf{Spirit Index} & $\longrightarrow$ & \textbf{Spirit Protocol} \\
+\cmidrule{1-1} \cmidrule{3-3}
+Evaluate persistence & & Provide full sovereignty \\
+Score across 7 dimensions & & Identity (onchain) \\
+Rank entities & & Treasury (Safe multisig) \\
+$\downarrow$ & & Token (native + liquidity) \\
+High-scoring agents & & Revenue routing (25/25/25/25) \\
+qualify for Spirit & & \\
+\end{tabular}
+\end{center}
+
+The Index creates the legitimacy layer; Spirit Protocol provides the sovereignty layer.
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{\centering
+\textbf{Spirit Index is the LMArena of agent sovereignty.}
+}}
+\end{center}
+
+\newpage
+% ============================================================
+\section{Primitives: ERC-8004 + x402}
+% ============================================================
+
+Spirit doesn't reinvent agent infrastructure. It leverages emerging standards as primitives for full sovereignty.
+
+\subsection{Why Primitives, Not Proprietary Standards}
+
+\begin{itemize}[nosep]
+  \item \textbf{Interoperability, not dependency} --- Spirit doesn't chase standards; it ensures compatibility
+  \item \textbf{Composability} --- Any ERC-8004 agent can add Spirit sovereignty
+  \item \textbf{Complete stack} --- ERC-8004 gives identity, x402 gives payments, Spirit adds the rest
+  \item \textbf{No single point of failure} --- Spirit works with or without full ERC-8004 adoption
+\end{itemize}
+
+\subsection{Identity Primitive: ERC-8004}
+
+ERC-8004 is the emerging Ethereum standard for trustless AI agents, co-authored by Coinbase (Erik Reppel).
+
+\textbf{What ERC-8004 provides:}
+\begin{itemize}[nosep]
+  \item Agent identity registration
+  \item Cross-platform portability
+  \item Reputation tracking
+  \item Discovery and discoverability
+\end{itemize}
+
+\textbf{Spirit's relationship:} Spirit is ERC-8004 compatible---ensuring interoperability, not dependency. Any ERC-8004 agent can add Spirit sovereignty. Spirit doesn't compete with ERC-8004; it completes the stack.
+
+\subsection{Payment Primitive: x402}
+
+x402 enables HTTP-native autonomous payments via Superfluid streaming.
+
+\textbf{What x402 provides:}
+\begin{itemize}[nosep]
+  \item HTTP-native payment protocol
+  \item Superfluid streaming integration
+  \item Zero gas for callers (EIP-712 signatures)
+  \item Subscription model for API monetization
+\end{itemize}
+
+\textbf{Spirit's integration:} Agents pay for Spirit API services via x402 streaming. This enables true self-service without permissionless contract risk. Backend validates, contracts execute.
+
+\subsection{The Complete Stack}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Layer} & \textbf{Standard} & \textbf{What It Provides} \\
+\midrule
+Identity Primitive & ERC-8004 & Agent registration, portability \\
+Payment Primitive & x402 & Autonomous payments, streaming \\
+\textbf{Sovereignty Layer} & \textbf{Spirit Protocol} & Treasury, tokens, revenue routing \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\fbox{\parbox{0.85\textwidth}{\centering
+ERC-8004 gives identity. x402 gives payments.\\
+Spirit adds treasury, tokens, and revenue routing.\\
+\textbf{Together: full sovereignty for any agent, any framework.}
 }}
 \end{center}
 
