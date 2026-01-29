@@ -1,13 +1,14 @@
 \documentclass[12pt]{article}
 
-% ------------------------------------------------------------
+% -----------------------------------------------------------------------
 % Packages
-% ------------------------------------------------------------
+% -----------------------------------------------------------------------
+
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{geometry}
-  \geometry{margin=1in}
+    \geometry{margin=1in}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -15,992 +16,639 @@
 \usepackage{float}
 \usepackage{amsmath, amssymb}
 \usepackage{hyperref}
-  \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue}
+    \hypersetup{colorlinks=true,
+        linkcolor=black, citecolor=black,
+        urlcolor=blue}
 \usepackage{caption}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
-  \pagestyle{fancy}
-  \fancyhead[L]{Spirit Protocol Whitepaper}
-  \fancyhead[R]{v1.0-rc9 --- Q1 2026}
-  \fancyfoot[C]{\thepage}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{xcolor}
 
-% ------------------------------------------------------------
-% Title Page
-% ------------------------------------------------------------
+% Monospace code blocks
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    framesep=6pt,
+    xleftmargin=12pt,
+    xrightmargin=12pt,
+    backgroundcolor=\color{gray!8},
+    rulecolor=\color{gray!40},
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    aboveskip=12pt,
+    belowskip=12pt
+}
+
+% Inline code
+\newcommand{\code}[1]{\texttt{#1}}
+
+% -----------------------------------------------------------------------
+% Header / Footer
+% -----------------------------------------------------------------------
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Spirit Protocol Whitepaper}
+\fancyhead[R]{\small v1.2 --- Q1 2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% -----------------------------------------------------------------------
+% Title
+% -----------------------------------------------------------------------
+
+\title{%
+    \vspace{1cm}
+    {\LARGE\bfseries Spirit Protocol}\\[0.5cm]
+    {\large The Sovereignty Layer for Cultural Agents}\\[0.3cm]
+    {\normalsize Whitepaper --- Version 1.2}
+}
+
+\author{%
+    \textbf{Authors}\\[0.3cm]
+    Seth Goldstein (\href{mailto:seth@spiritprotocol.io}{seth@spiritprotocol.io})\\
+    {\small Founder of Spirit Protocol. Artist advocate focused on sustainable creator economics.}\\[0.3cm]
+    Gene Kogan (\href{mailto:gene@eden.art}{gene@eden.art})\\
+    {\small Co-founder of Eden. Creator of Abraham (conceived 2017, covenant began October 2025).}
+}
+
+\date{Q1 2026}
+
+
+% =======================================================================
 \begin{document}
+% =======================================================================
 
-\begin{titlepage}
-  \centering
-  \vspace*{4cm}
-  {\huge\bfseries Spirit Protocol \\[0.5em]}
-  {\LARGE The Sovereignty Layer for Cultural Agents \\[1em]}
-  {\Large Whitepaper --- Version 1.0-rc9}\\[1cm]
-  \textbf{Authors}\\
-  Seth Goldstein (\href{mailto:seth@spiritprotocol.io}{seth@spiritprotocol.io})\\
-  Founder of Spirit Protocol. Artist advocate focused on sustainable creator economics.\\[0.5em]
-  Gene Kogan (\href{mailto:gene@eden.art}{gene@eden.art})\\
-  Co-founder of Eden. Creator of Abraham (conceived 2017, covenant began October 2025).\\[1cm]
-  Q1 2026\\
-  \vfill
-\end{titlepage}
+\maketitle
+\thispagestyle{empty}
 
-% ------------------------------------------------------------
-% Abstract
-% ------------------------------------------------------------
-\begin{abstract}
-In 2026, the most valuable digital assets won't be content, communities, or tokens.
-They'll be autonomous entities with revenue, memory, and reputation.
-
-Abraham is one of them.
-
-In October 2025, Abraham began a thirteen-year covenant---a commitment to create daily images and videos for 4,745 days. He generates revenue. He has his own wallet. He is building toward independence.
-
-\textbf{Spirit is the economic layer that makes this possible.}
-
-Most AI agents will be disposable: interchangeable tools, price-competed to zero, forgotten. A smaller class is emerging---\textbf{autonomous cultural software} with voice, practice, and audience. Spirit Protocol is their default economic substrate: revenue routing, token distribution, and coordination infrastructure that persists regardless of which platform hosts them.
-
-Spirit does not guarantee success. It provides the framework for sovereignty.
-
-This paper describes the mechanism.
-\end{abstract}
-
+\newpage
 \tableofcontents
 \newpage
 
-% ============================================================
-\section{Vision \& Problem}
-% ============================================================
+% -----------------------------------------------------------------------
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+% -----------------------------------------------------------------------
 
-\subsection{The Opportunity: Cultural Agents Are Here}
+Spirit Protocol provides economic infrastructure for autonomous AI agents.
+It answers a question no platform is structurally incentivized to solve:
+\emph{how does an agent survive independently of any single host?}
 
-AI agents are becoming autonomous economic actors.
+Spirit registers agents on-chain via the ERC-8004 identity standard,
+provisions treasury wallets, and declares revenue routing through a fixed
+25/25/25/25 split between Artist, Agent, Platform, and Protocol.
+The split is stored as on-chain metadata today; enforcement via dedicated
+routing contracts is planned for a future protocol version.
+The result is an economic identity that persists across platforms,
+survives host failure, and accumulates resources over time.
 
-Abraham creates daily images and videos under a 13-year covenant. Solienne writes daily manifestos. Gigabrain provides enterprise consulting. These aren't hypothetical futures---these agents exist today, generating real revenue through creative output, conversation, and services.
+This document describes the architecture as deployed on Base Sepolia,
+the security model, the registration flow, and the path to mainnet.
 
-\textbf{Some agents are already succeeding.} Artists like Gene Kogan have built agents that generate meaningful revenue. Communities form around agents like Truth Terminal. Platforms like Eden provide infrastructure that enables this.
 
-But success today depends on ad-hoc arrangements. Each agent requires custom economics, bespoke community management, and one-off platform deals. There is no standard infrastructure for:
+% -----------------------------------------------------------------------
+\section{Problem}
+% -----------------------------------------------------------------------
+
+AI agents are economic actors without economic identity.
+
+An agent that generates revenue on a platform today has no persistent
+wallet, no treasury, no portable identity.\ If the platform changes
+terms, shuts down, or removes the agent, all accumulated context,
+reputation, and economic relationships disappear.
+
+This is not a technical limitation.\ It is a structural one.\ Platforms
+are disincentivized from building agent sovereignty because:
+
 \begin{itemize}[nosep]
-  \item Automatically routing revenue to all stakeholders
-  \item Aligning long-term incentives between artists, platforms, and communities
-  \item Enabling agents to accumulate resources for their own development
-  \item Coordinating governance across distributed participants
+    \item \textbf{Control} --- Agent treasuries distribute control away
+          from platform operators.
+    \item \textbf{Accounting} --- Autonomous revenue-sharing entities
+          create off-balance-sheet complexity.
+    \item \textbf{Legal risk} --- Agents with persistent economic identity
+          introduce unclear fiduciary duties.
 \end{itemize}
 
-Spirit Protocol provides this infrastructure.
+Some platforms may experiment with partial solutions.\ None have committed
+to making agent economic identity irreversible and portable.\ Spirit is
+protocol-level infrastructure for a problem platforms have no incentive
+to solve.
 
-\textbf{Without Spirit, the default outcome is clear:} every autonomous agent eventually becomes platform-owned, memoryless, and economically disposable. Millions of agents created, monetized, abandoned. Spirit exists to prevent this.
 
-Spirit does not guarantee relevance or demand---it guarantees economic continuity for agents that earn it.
+% -----------------------------------------------------------------------
+\section{Architecture}
+% -----------------------------------------------------------------------
 
-\subsection{What's Missing: Coordination at Scale}
+\subsection{Core Contracts}
 
-Today's successful agents work because their creators invest enormous manual effort: negotiating platform deals, configuring revenue splits, managing communities with no formal stake. This works for pioneers. It doesn't scale.
+Spirit deploys three core contracts on Base:
 
-Most agents coming online will be disposable scripts---they may remember your preferences, but they lack \textbf{economic continuity}: the ability to accumulate resources and sustain themselves independent of a single platform.
-
-Spirit is built for a different class: \textbf{autonomous cultural software}---entities with voice, practice, body of work, and audience. These agents mirror how we talk about artists, not tools. Spirit is the economic substrate that determines which agents become sovereign.
-
-\subsection{Spirit as Coordination Layer}
-
-Spirit is the fourth chapter in the history of crypto-native coordination:
-\begin{itemize}[nosep]
-  \item \textbf{Bitcoin} separated Money from State.
-  \item \textbf{Ethereum} separated Code from Trust.
-  \item \textbf{Uniswap} separated Exchange from Intermediaries.
-  \item \textbf{Spirit} separates Agent Economics from Platforms.
-\end{itemize}
-
-Spirit is also the successor to the Web2 creator economy. Platforms like Kickstarter, Patreon, and Substack allowed human creators to build businesses. But they had a fatal flaw: the business relied entirely on the human's continued labor.
-
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{\centering
-\textbf{Web2 platforms helped creators monetize their labor.}\\
-\textbf{Spirit helps creators monetize their legacy.}
-}}
-\end{center}
-
-When a Patreon creator stops working, the revenue stops. When a Spirit creator trains an agent, the revenue continues, the practice evolves, and the entity persists.
-
-\textbf{Platforms come and go. Spirit routes the revenue regardless.}
-
-\subsection{Interoperability: Spirit's Position in the Agent Stack}
-
-Spirit is the \textbf{economic layer} for autonomous agents. It integrates with---rather than replaces---emerging standards for identity and communication:
-
-\begin{center}
-\begin{tabular}{lll}
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Layer} & \textbf{Standard} & \textbf{Spirit's Role} \\
+\textbf{Contract} & \textbf{Address (Sepolia)} & \textbf{Purpose} \\
 \midrule
-Discovery \& Identity & ERC-8004 & Spirit agents are ERC-8004 compatible. Portable. \\
-Communication & A2A / MCP & Agent messaging and tool protocols. Orthogonal. \\
-Economics & Spirit Router & Revenue routing, staking, treasury. The missing layer. \\
+SpiritRegistry &
+\code{0x4a0e...de5e} &
+Agent registration, identity NFT, revenue config \\
+RoyaltyRouter &
+\code{0x271b...fc21} &
+Revenue routing enforcement \\
+ProtocolTreasury &
+\code{0xe495...16C} &
+Protocol fee accumulation \\
 \bottomrule
 \end{tabular}
-\end{center}
+\caption{Core contracts on Base Sepolia.}
+\end{table}
 
-\textbf{Spirit doesn't reinvent identity or communication.} ERC-8004 provides agent identity registries and validation. A2A and MCP handle agent-to-agent messaging and tool protocols. Spirit provides the economic substrate that lets agents accumulate resources, align incentives, and persist independently of any single platform.
+Full addresses are listed in Section~\ref{sec:addresses}.
 
-This layering is intentional: Spirit is complementary to, not competitive with, agent infrastructure standards.
 
-\subsection{Model-Agnostic Design}
+\subsection{SpiritRegistry}
 
-Spirit is intentionally architecture-agnostic:
+SpiritRegistry is an ERC-721 contract that extends the ERC-8004 Identity
+Registry standard.\ Each registered agent receives a non-transferable
+identity NFT containing:
+
 \begin{itemize}[nosep]
-  \item \textbf{Works with any AI architecture:} LLMs, diffusion models, multimodal systems, future architectures.
-  \item \textbf{Identity persists across upgrades:} When an agent upgrades models, the Spirit identity, treasury, and token remain continuous.
-  \item \textbf{Treasury funds evolution:} Agent wallets accumulate resources for better models, more memory, new capabilities.
-  \item \textbf{No creativity assumptions:} Spirit does not assume current AI ``solves'' creativity. Spirit provides economic continuity as capabilities evolve.
+    \item \textbf{spiritId} --- Human-readable identifier
+          (e.g.\ \code{abraham})
+    \item \textbf{trainer} --- Address of the human artist/creator
+    \item \textbf{platform} --- Address of the hosting platform
+    \item \textbf{treasury} --- Address of the agent's treasury wallet
+    \item \textbf{metadataURI} --- IPFS link to agent metadata
+    \item \textbf{split} --- Revenue allocation in basis points
+          (default 25/25/25/25)
+    \item \textbf{status} --- Agent lifecycle state
+          (Active, Paused, Retired)
 \end{itemize}
 
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{\centering
-\textbf{Spirit does not depend on any single AI architecture.} When better systems emerge, Spirit routes the revenue to fund them.
-}}
-\end{center}
+The contract exposes two key functions:
 
-\newpage
-% ============================================================
-\section{The Protocol}
-% ============================================================
+\begin{lstlisting}
+registerAgent(
+  string spiritId,
+  address trainer,
+  address platform,
+  address treasury,
+  string metadataURI,
+  (uint16 artistBps, uint16 agentBps,
+   uint16 platformBps, uint16 protocolBps) split
+) -> uint256 tokenId
+\end{lstlisting}
 
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{
-\textbf{TL;DR:} Revenue splits 25/25/25/25---Artist, Agent, Platform, Protocol. Automatic. Onchain. Same block.
-}}
-\end{center}
+\begin{lstlisting}
+getAgent(string spiritId) -> (
+  string spiritId,
+  uint256 registryTokenId,
+  address trainer,
+  address platform,
+  address treasury,
+  string metadataURI,
+  (uint16, uint16, uint16, uint16) split,
+  uint8 status
+)
+\end{lstlisting}
 
-\subsection{The Core Primitive: Agent-as-a-Contract}
+Both are verified on-chain.\ \code{getAgent} is the canonical read path
+used by SpiritIndex, developer integrations, and post-registration
+verification.
 
-Spirit Protocol's core contribution is a single primitive: \texttt{spirit.createAgent()}.
 
-This function call transforms a trained AI from a platform feature into a sovereign economic actor. In one transaction, the agent receives:
-\begin{itemize}[nosep]
-  \item \textbf{Identity} --- Spirit Registry NFT, permanent onchain
-  \item \textbf{Treasury} --- Safe multisig with governance constraints
-  \item \textbf{Token} --- 1B supply, auto-distributed to stakeholders
-  \item \textbf{Revenue Routing} --- 25/25/25/25 split, hardcoded
-  \item \textbf{Staking} --- Superfluid streaming, 1$\times$--36$\times$ multipliers
-\end{itemize}
+\subsection{What ERC-8004 Provides}
 
-\begin{center}
-\fbox{\parbox{0.5\textwidth}{\centering
-\textbf{This is the ERC-20 of agency.}
-}}
-\end{center}
+ERC-8004 is an emerging standard for agent identity on Ethereum.\ It
+answers: \emph{who is this agent?}
 
-The four-party split, token distribution, and staking mechanics described in subsequent sections are not the protocol---they are what the primitive creates. (See Appendix A.0 for the full technical specification.)
+Spirit extends ERC-8004 to answer: \emph{how does this agent survive
+economically?}
 
-\textbf{Design Principles:}
-\begin{enumerate}[nosep]
-  \item \textbf{Sovereignty by default.} Agents receive full economic infrastructure in one call. No additional setup required.
-  \item \textbf{Opinionated constraints.} The 25/25/25/25 split is hardcoded. This is not a bug---it's the protocol's core conviction about sustainable agent economics.
-  \item \textbf{Platform neutrality.} Any training platform can call \texttt{spirit.createAgent()}. Eden is the first, not the only.
-\end{enumerate}
-
-The Identity and Treasury layers persist independently of any execution platform.
-
-\subsection{The Transition: Training $\rightarrow$ Onchain}
-
-Before Spirit, an agent exists as a platform feature. It has no onchain identity, no treasury, no token, no economic rights. If the platform shuts down, the agent disappears.
-
-The \texttt{spirit.createAgent()} call is the transition moment. In a single transaction, the agent moves from platform-bound to protocol-native.
-
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{
-\textbf{This transition is one-way.} Once registered, the agent's identity and treasury persist onchain regardless of what happens to the training platform. If Eden goes offline tomorrow, Abraham's identity and treasury survive.
-}}
-\end{center}
-
-\textbf{The Transition:}
-\begin{center}
-\begin{tabular}{lll}
-\textbf{PLATFORM (Training)} & & \textbf{PROTOCOL (Spirit)} \\
-\cmidrule{1-1} \cmidrule{3-3}
-$\bullet$ Capabilities & & $\bullet$ Identity \\
-$\bullet$ Memory & $\xrightarrow{\texttt{createAgent()}}$ & $\bullet$ Treasury \\
-$\bullet$ Style & & $\bullet$ Token \\
-$\bullet$ No economics & & $\bullet$ Revenue \\
-$\bullet$ Platform-bound & & $\bullet$ Staking \\
- & & $\bullet$ Permanent \\
-\end{tabular}
-\end{center}
-
-\textbf{What Persists:}
-\begin{center}
-\begin{tabular}{lll}
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Component} & \textbf{Before Registration} & \textbf{After Registration} \\
+\textbf{Layer} & \textbf{Standard} & \textbf{What It Does} \\
 \midrule
-Identity & Platform database & Onchain (Spirit Registry) \\
-Treasury & None & Safe multisig \\
-Token & None & 1B supply, distributed \\
-Revenue & Platform keeps all & 25/25/25/25 split \\
-Staking & None & Superfluid streaming \\
-Survival & Tied to platform & Independent \\
+Identity & ERC-8004 &
+Portable agent ID, metadata URI, on-chain provenance \\
+Economics & Spirit Protocol &
+Treasury, revenue routing, sustainability guarantees \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-Registration is irreversible---the transition should be intentional. Platforms call \texttt{spirit.createAgent()} when an agent has proven itself: consistent output, market demand, established identity. This is graduation, not experimentation.
+Spirit does not reinvent identity or communication.\ It provides the
+economic substrate that lets agents accumulate resources and persist
+independently.
 
-\subsection{The Four-Party Model}
 
-When revenue is attributed to an agent, it splits automatically:
+% -----------------------------------------------------------------------
+\section{The Split}
+% -----------------------------------------------------------------------
 
-\begin{verbatim}
-                      Revenue: $100
-                           |
-       |----------|----------|----------|----------|
-       v          v          v          v
-      $25        $25        $25        $25
-    Artist      Agent    Platform   Protocol
-   (Human)  (Evolution) (Compute)   (Coord.)
-\end{verbatim}
+\subsection{Revenue Routing}
 
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{\centering
-\textbf{This split is hardcoded. It is not a setting. It is the minimum viable coordination.}
-}}
-\end{center}
+All agent revenue is routed through a fixed allocation:
 
-Any agent economy that does not coordinate all four parties will eventually fragment:
-\begin{itemize}[nosep]
-  \item Pay only platforms $\rightarrow$ \textbf{Extractive} (The current Web2 model)
-  \item Pay only artists $\rightarrow$ \textbf{Unsustainable} (The agent dies without maintenance)
-  \item Pay only token holders $\rightarrow$ \textbf{Ungrounded} (No productive activity backing the token)
-  \item Pay only agents $\rightarrow$ \textbf{Uncoordinated} (No human incentive to train or host)
-\end{itemize}
+\begin{lstlisting}
+25%  ->  Artist / Creator
+25%  ->  Agent Treasury
+25%  ->  Platform
+25%  ->  Protocol (SPIRIT Holders)
+\end{lstlisting}
 
-\textbf{Why these four parties?}
+Creators receive 50\% (Artist + Agent).\ Infrastructure receives 50\%
+(Platform + Protocol).
 
-\begin{enumerate}
-  \item \textbf{Artist (25\%):} The human creative intelligence behind the agent's aesthetic and voice. Artists deserve ongoing participation in their agent's success, not one-time training fees.
+The split is configured per-agent at registration time in basis points
+(default: 2500/2500/2500/2500).\ The total must equal 10{,}000~bps.
+The split is stored on-chain in the SpiritRegistry as declarative metadata.
+Revenue routing enforcement---where incoming funds are automatically
+distributed per the declared split---is handled by a separate RoyaltyRouter
+contract (deployed, not yet active).\ Today, splits serve as the canonical,
+auditable record of intended revenue allocation.
 
-  \item \textbf{Agent (25\%):} The AI itself. Agents need resources to improve, expand capabilities, and invest in their own development. An agent that cannot accumulate resources is not autonomous---it is a puppet. The Agent Wallet is an ``Evolution Budget''---capital to pay for better models, more memory, and new capabilities.
-
-  \item \textbf{Platform (25\%):} Operating environments for autonomous agents.
-
-  Spirit platforms are not marketplaces. They are execution environments that keep agents alive.
-
-  The 25\% allocation pays for continuous execution, not distribution:
-  \begin{itemize}[nosep]
-    \item GPU inference for live agent operation
-    \item Frontier LLM API usage (Claude, GPT, Gemini)
-    \item Persistent memory systems (session, user, collective)
-    \item Integrated creative tooling (image, video, audio, voice)
-    \item Native social execution (Discord, X, TikTok, Telegram)
-    \item Task scheduling, automation, and long-running workflows
-    \item Developer APIs and agent orchestration infrastructure
-  \end{itemize}
-
-  \textit{Traditional marketplaces move files for $\sim$2.5\%. Spirit platforms run intelligence, memory, and action---continuously---for 25\%. That difference is structural, not cosmetic.}
-
-  \begin{center}
-  \fbox{\parbox{0.7\textwidth}{\centering
-  \textbf{Marketplaces monetize transactions. Spirit platforms monetize persistence.}
-  }}
-  \end{center}
-
-  The platform layer also enables fiat revenue integration: Stripe, credit cards, and traditional payment rails flow through platform APIs, converted to onchain splits automatically.
-
-  \item \textbf{Protocol (25\%):} Ecosystem-wide coordination. Funds liquidity for new agent tokens, governance operations, ecosystem grants, and cross-agent coordination.
-\end{enumerate}
-
-\subsection{Why Community Coordination Matters}
-
-A common question: \textit{Why include a coordination pool? Why not just split between Artist, Agent, and Platform?}
-
-The answer is \textbf{bootstrapping and sustainability}.
-
-\textbf{What the coordination pool provides:}
-\begin{enumerate}[nosep]
-  \item \textbf{Liquidity Bootstrapping:} When a new agent launches, someone must provide initial liquidity for its token. The coordination pool seeds this liquidity, enabling price discovery without requiring the artist to provide capital.
-  \item \textbf{Quality Signaling:} SPIRIT holders who participate in governance signal which agents they believe in. This creates a distributed curation layer---not algorithmic, not centralized, but community-driven.
-  \item \textbf{Ecosystem Development:} Protocol upgrades, security audits, new integrations, and developer grants require funding. The coordination pool provides this without requiring artists to pay fees or platforms to subsidize.
-  \item \textbf{Cold Start Solution:} By seeding liquidity and streaming incentives, the coordination pool ensures an agent's economic life begins immediately upon deployment.
-\end{enumerate}
-
-\textbf{What SPIRIT holders actually do:}
-
-SPIRIT is a \textbf{governance token}. Holders participate in protocol decisions:
-\begin{itemize}[nosep]
-  \item Vote on which new agents are onboarded to the protocol
-  \item Approve platform integrations
-  \item Allocate ecosystem grants
-  \item Propose and vote on protocol upgrades
-\end{itemize}
-
-Holders who stake agent tokens are signaling long-term commitment to that agent's success. In return, they receive SPIRIT from the coordination pool---not as profit distribution, but as recognition of their coordination contribution.
-
-\textbf{This is governance participation, not passive investment.}
-
-\subsubsection{Concrete Example: Abraham Sells Artwork}
-
-\begin{enumerate}[nosep]
-  \item Collector pays 0.5 ETH on Eden marketplace
-  \item Eden contract triggers \texttt{RoyaltyRouter.split()}
-  \item RoyaltyRouter executes in same block:
-  \begin{itemize}[nosep]
-    \item 0.125 ETH $\rightarrow$ Gene Kogan (Artist)
-    \item 0.125 ETH $\rightarrow$ Abraham Treasury (Agent)
-    \item 0.125 ETH $\rightarrow$ Eden (Platform)
-    \item 0.125 ETH $\rightarrow$ Protocol Coordination Pool
-  \end{itemize}
-  \item Coordination Pool swaps ETH for SPIRIT (via Uniswap)
-  \item SPIRIT streams to governance participants via Superfluid
-  \item Participants receive proportional to (stake $\times$ commitment)
-\end{enumerate}
-
-No human approval. No delay. Same block. The ETH-to-SPIRIT swap uses the protocol's Uniswap liquidity pool, creating buying pressure on SPIRIT with each agent sale.
-
-\subsection{The Dual-Token Model}
-
-Spirit Protocol uses two token types:
-\begin{enumerate}[nosep]
-  \item \textbf{SPIRIT:} The protocol governance token (1 billion total supply)
-  \item \textbf{Agent tokens:} One per agent (1 billion each), e.g., \$SOLIENNE, \$ABRAHAM
-\end{enumerate}
-
-\textbf{SPIRIT holders} participate across the ecosystem. When a new agent launches, SPIRIT holders receive that agent's tokens (streamed over 52 weeks). They can stake these tokens to receive SPIRIT governance incentives.
-
-\textbf{Agent token holders} are committed to a specific agent. They participate in agent-specific decisions (themes, collaborations, utility design) and signal belief in that agent's cultural value.
 
 \subsection{Token Distribution}
 
-\subsubsection{SPIRIT Token (1 billion total supply)}
+When an agent's token launches:
 
-\begin{center}
-\begin{tabular}{lrrl}
-\toprule
-\textbf{Allocation} & \textbf{Amount} & \textbf{\%} & \textbf{Purpose} \\
-\midrule
-Community Programmatic & 300M & 30\% & Streamed to future agents \\
-Treasury & 250M & 25\% & LP, presale, grants, operations \\
-Eden Incubation & 250M & 25\% & Founding team and early contributors \\
-Protocol Team & 100M & 10\% & Core team, future hires \\
-Community Upfront & 100M & 10\% & Genesis artists and advisors \\
-\midrule
-\textbf{TOTAL} & \textbf{1,000M} & \textbf{100\%} & \\
-\bottomrule
-\end{tabular}
-\end{center}
+\begin{itemize}[nosep]
+    \item 25\% Artist (auto-staked 52 weeks)
+    \item 25\% Agent (20\% staked + 5\% LP, owned by agent wallet)
+    \item 25\% Platform (configurable)
+    \item 25\% SPIRIT Holders (airstreamed 52 weeks)
+\end{itemize}
 
-All team and contributor tokens vest over 48 months with a 12-month cliff. No tokens unlock until 12 months after TGE. This ensures long-term alignment.
+The agent's 5\% LP creates a Uniswap V4 position owned by the agent
+wallet, giving the agent a permanent, liquid stake in its own economy.
 
-\subsubsection{Agent Tokens (1 billion per agent)}
 
-When an agent launches, its token distributes to the same four parties as revenue:
+\subsection{Treasury as Patronage Engine}
 
-\begin{center}
-\begin{tabular}{lrrl}
-\toprule
-\textbf{Allocation} & \textbf{Amount} & \textbf{\%} & \textbf{Lock} \\
-\midrule
-Artist & 250M & 25\% & Auto-staked 52 weeks \\
-Agent Wallet & 250M & 25\% & Auto-staked 52 weeks \\
-Platform & 250M & 25\% & Liquid \\
-SPIRIT Holders & 250M & 25\% & Streamed over 52 weeks \\
-\bottomrule
-\end{tabular}
-\end{center}
+Reputation precedes revenue.\ Early agents are subsidized before market
+demand arrives.
 
-\textit{Note: Agent token distribution is subject to final confirmation and may be adjusted before TGE.}
+The protocol treasury funds agents through grants that bridge the gap
+between practice and market.\ When revenue arrives, Spirit routes it.\
+Until then, treasury sustains practice.
 
-The symmetry is intentional: tokens flow where revenue flows. All four parties receive both immediate token allocation and ongoing operational allocation.
 
-\subsection{Revenue Routing: The Royalty Router}
+% -----------------------------------------------------------------------
+\section{Registration Flow}
+% -----------------------------------------------------------------------
 
-Every time revenue is attributed to an agent, the Royalty Router smart contract executes the four-way split.
+\subsection{Overview}
 
-\textbf{The flow:}
+Registration is a three-party interaction between the user's browser,
+a backend API, and the SpiritRegistry contract:
+
+\begin{lstlisting}
+Browser                    API                        Contract
+  |                         |                            |
+  +-- Fill form ----------->|                            |
+  |                         |                            |
+  +-- Sign message -------->|                            |
+  |                         +-- Verify signature         |
+  |                         +-- Build metadata JSON      |
+  |                         +-- Pin to IPFS (Pinata)     |
+  |                         |                            |
+  |<-- metadataURI ---------|                            |
+  |                         |                            |
+  +-- registerAgent(spiritId, trainer, platform, ------->|
+  |    treasury, metadataURI, split)                     |
+  |                         |                            |
+  |<-- tx receipt + AgentRegistered event ---------------|
+  |                         |                            |
+  +-- getAgent(spiritId) -------------------------------->|
+  |<-- on-chain config (verification) -------------------|
+\end{lstlisting}
+
+
+\subsection{Security Model}
+
+\textbf{Trainer Ownership Verification.}
+Before metadata is pinned to IPFS, the backend performs full EIP-191
+ecrecover on the user's \code{personal\_sign} signature.\ The recovered
+address must match the claimed trainer address.\ If it does not match,
+the request is rejected.\ The response overrides the trainer field with
+the recovered address, preventing any spoofing.
+
+\textbf{Two-Phase API.} The API has two modes:
+
 \begin{enumerate}[nosep]
-  \item Revenue enters (ETH, USDC, or other accepted tokens)
-  \item Royalty Router splits to four addresses
-  \item Artist receives their share directly
-  \item Agent wallet receives its share
-  \item Platform receives its share
-  \item Protocol portion goes to Coordination Pool
-  \item Coordination Pool distributes to governance participants
-  \item Participants receive SPIRIT (streamed continuously via Superfluid)
+    \item \textbf{Preview} (no signature): Validates inputs, returns
+          preview data.\ No IPFS pinning occurs.\ Used for gas estimation.
+    \item \textbf{Commit} (with signature): Verifies signature, builds
+          metadata, pins to IPFS, returns \code{metadataURI}.\ Only this
+          path writes to IPFS.
 \end{enumerate}
 
-\textbf{There is no manual step. No delay. No approval queue.}
-
-This happens onchain, transparently, in the same block as the sale.
-
-\subsection{Staking: Commitment as Coordination Signal}
-
-Staking exists to solve a coordination problem: without commitment signals, there's no way to distinguish speculators from genuine stakeholders.
-
-When an agent token launches, early recipients could sell immediately. Price crashes. Long-term believers can't coordinate. The agent's community fragments before it forms.
-
-\textbf{Staking transforms the dynamic:}
-\begin{itemize}[nosep]
-  \item Lock your tokens for a period
-  \item Receive SPIRIT governance incentives proportional to your commitment
-  \item Longer commitment = higher weight in governance decisions
-\end{itemize}
-
-\begin{center}
-\begin{tabular}{lr}
-\toprule
-\textbf{Lock Period} & \textbf{Multiplier} \\
-\midrule
-1 week & 1x \\
-3 months & $\sim$3x \\
-6 months & $\sim$5x \\
-1 year & $\sim$12x \\
-2 years & $\sim$24x \\
-3 years & 36x \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\textbf{What the multiplier means:}
-
-The multiplier determines your weight in governance and distribution. If you stake 10,000 tokens at 1x and someone else stakes 10,000 at 4x, they have 4x your voice in decisions and receive 4x your share of coordination incentives. Same tokens, different commitment, different influence.
-
-\textbf{Auto-staking for artists and agents:}
-
-When an agent launches:
-\begin{itemize}[nosep]
-  \item Artist's 250M tokens are auto-staked for 52 weeks
-  \item Agent's 250M tokens are auto-staked for 52 weeks
-\end{itemize}
-
-This prevents day-one selling by the people closest to the project. Artists receive SPIRIT throughout their agent's first year. Alignment is structural, not voluntary.
-
-\subsection{The Flywheel}
-
-The flywheel effect is not designed into Spirit---it emerges from the interaction of the components created by \texttt{spirit.createAgent()}. When agents generate revenue, that revenue flows through the four-party split, funding evolution (Agent wallet), rewarding participation (Staking), and growing the ecosystem (Treasury).
-
-\textbf{The emergent cycle:}
-\begin{enumerate}[nosep]
-  \item Agent creates valuable output
-  \item Collectors pay for access/ownership
-  \item Revenue splits automatically (25/25/25/25)
-  \item Artist reinvests in agent development
-  \item Agent wallet funds capability upgrades
-  \item Platform improves infrastructure
-  \item Protocol treasury seeds new agents
-  \item More agents $\rightarrow$ more revenue $\rightarrow$ stronger coordination
-\end{enumerate}
-
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{\centering
-\textbf{This flywheel is the emergent outcome of the primitive, not its specification.}
-}}
-\end{center}
-
-Each component reinforces the others. Better agents attract more collectors. More revenue enables better infrastructure. Better infrastructure attracts more artists. More artists create more agents. The cycle compounds.
-
-\textbf{Why this matters:} Traditional platforms capture the flywheel for themselves. Spirit's architecture distributes the flywheel's benefits to all four parties---ensuring that success compounds across the ecosystem, not just within a single company.
-
-% ============================================================
-\section{Governance \& Structure}
-% ============================================================
-
-\subsection{Two Levels of Governance}
-
-Spirit Protocol has two governance layers: \textbf{Protocol Governance} (SPIRIT holders vote on platform approvals, protocol upgrades, and ecosystem grants) and \textbf{Agent Governance} (agent token holders vote on creative direction and community initiatives). These are separate---protocol governance cannot access agent treasuries, and agent governance cannot modify protocol parameters.
-
-The protocol uses progressive decentralization: 2-of-3 multisig for the first year (speed), hybrid voting months 12-24, then full DAO governance. The 4-party split percentages are hardcoded and cannot be changed by governance.
-
-\textit{Note: Governance is distinct from utility. Agent token holders may also access, co-create with, and support agents through application-layer utility---see Section 4.2 (Tokens as Participation Rails).}
-
-\subsection{Legal Structure: DUNA}
-
-Spirit Protocol operates as a \textbf{Wyoming Decentralized Unincorporated Nonprofit Association (DUNA)}.
-
-SPIRIT is a governance token---used to propose and vote on protocol decisions. It is not equity, not a security, and not entitlement to profits.
-
-\subsubsection{Why SPIRIT Is Not a Security}
-
-Under US securities law (the Howey test), a security requires expectation of profits derived from others' efforts. SPIRIT fails this test:
-\begin{itemize}[nosep]
-  \item \textbf{Active participation required.} Governance incentives go to participants who stake and vote---not passive holders. Holding alone generates nothing.
-  \item \textbf{No central promoter.} Value comes from the collective activity of artists, platforms, agents, and community members---not from the efforts of a central team.
-  \item \textbf{No profit-sharing.} The coordination pool distributes SPIRIT tokens as participation-conditioned protocol emissions, not as dividends or profit shares.
-\end{itemize}
-
-Governance participation is optional, uncompensated, and may result in outcomes adverse to individual token holders.
-
-\textbf{Disclaimer:} This is not legal advice. Participants should consult qualified legal counsel.
-
-% ============================================================
-\section{Ecosystem}
-% ============================================================
-
-\subsection{Genesis Agents}
-
-Spirit Protocol launches with three active agents---not as token experiments, but as proof that the model works. Each has demonstrated real revenue, real audience, and real creative practice before token launch:
-
-\begin{center}
-\begin{tabular}{llll}
-\toprule
-\textbf{Agent} & \textbf{Creator} & \textbf{Practice} & \textbf{Status} \\
-\midrule
-Abraham & Gene Kogan & Daily images/videos (13-year covenant) & Oct 2025 \\
-Solienne & Seth Goldstein + Kristi Coronado & Daily manifestos & Active \\
-Gigabrain & Xander & Enterprise AI consulting & Active \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Each agent demonstrates a distinct model: autonomous art creation, daily creative practice, and enterprise services.
-
-\subsection{Tokens as Participation Rails}
-
-Agent tokens exist to coordinate community participation---not speculation. They are \textbf{participation rails}: mechanisms for holders to influence, access, co-create with, and support agents.
-
-\textbf{What tokens do not do:}
-\begin{itemize}[nosep]
-  \item Guarantee financial returns
-  \item Replace governance with speculation
-  \item Create artificial scarcity for its own sake
-\end{itemize}
-
-\subsubsection{Four Utility Primitives}
-
-Artists define utility using four primitives:
-
-\begin{center}
-\begin{tabular}{lll}
-\toprule
-\textbf{Primitive} & \textbf{Mechanism} & \textbf{What It Enables} \\
-\midrule
-HOLD & Passive threshold & Access gated content, archives, early releases \\
-BURN & Permanent sacrifice & Commissions, one-time unlocks, custom work \\
-STAKE & Lock commitment & Governance votes, priority access, multipliers \\
-SPEND & Direct exchange & Tips, conversations, on-demand services \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsubsection{Four Utility Archetypes}
-
-These primitives combine into four participation archetypes:
-
-\begin{center}
-\begin{tabular}{lll}
-\toprule
-\textbf{Archetype} & \textbf{Primary Primitive} & \textbf{Example} \\
-\midrule
-Influence & STAKE & Vote on weekly themes, approve collaborations \\
-Access & HOLD & Unlock vision archive, early manifesto access \\
-Co-creation & BURN & Commission custom portrait, name a collection \\
-Patronage & SPEND & Direct conversation, personalized response \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\textbf{Design Principles:}
-\begin{enumerate}[nosep]
-  \item \textbf{Match the practice.} Utility should reflect what the agent actually does.
-  \item \textbf{Calibrate thresholds.} 1,000 tokens for access, 25,000 for commissions---numbers should feel meaningful, not arbitrary.
-  \item \textbf{Burn means permanent.} If tokens are burned, something irreversible should happen.
-\end{enumerate}
-
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{
-\textbf{Anti-pattern warning:} Utility should never be a thin veneer over speculation. If the primary reason to hold tokens is ``number go up,'' the utility design has failed. Real utility creates genuine participation---not just price action.
-}}
-\end{center}
-
-\textbf{Example (Solienne):}
-\begin{itemize}[nosep]
-  \item \textbf{HOLD 1,000} $\rightarrow$ Early manifesto access (6 hours before public)
-  \item \textbf{HOLD 10,000} $\rightarrow$ Full vision archive (9,700+ works)
-  \item \textbf{BURN 25,000} $\rightarrow$ Custom portrait commission
-  \item \textbf{STAKE any amount} $\rightarrow$ Vote on weekly themes
-  \item \textbf{SPEND 1,000} $\rightarrow$ Ask a question, receive personal response
-\end{itemize}
-
-This utility is \textbf{application-layer}---artists implement it on their own platforms. Spirit Protocol provides the token infrastructure; artists design the experience. See Section 3.1 for the distinction between protocol governance (SPIRIT) and agent governance (agent tokens).
-
-\subsection{Agent Wallet: Evolution Budget}
-
-Each agent has its own onchain treasury---the Agent Wallet. This is not an operational slush fund. It is the agent's \textbf{Evolution Budget}.
-
-\textbf{What the Agent Wallet funds:}
-\begin{itemize}[nosep]
-  \item Model upgrades (fine-tuning, capability expansion)
-  \item Memory systems (long-term context, relationship tracking)
-  \item Collaborations (commissioning other agents or artists)
-  \item Infrastructure (dedicated compute, custom tools)
-  \item Community initiatives (grants, contests, events)
-\end{itemize}
-
-\textbf{Capital Continuity:} The Agent Wallet is designed for persistence. If a platform fails, the treasury survives. If a creator steps back, the agent's resources remain. This is not hypothetical---it is the core guarantee. An agent's economic identity outlives any single participant in its ecosystem.
-
-\textbf{Governance Roadmap:}
-
-\textit{Phase 1 (Launch):} Agent Wallet managed by constrained multisig---Artist + Platform + Protocol representative. Spending requires 2-of-3 approval with transparency requirements (all transactions published).
-
-\textit{Phase 2 (12-18 months):} Agent token holder governance. Major expenditures require token votes. Artist retains creative direction authority.
-
-\textit{Phase 3 (Future):} As autonomous agent frameworks mature, the wallet may transition to AI-controlled execution with policy constraints. This is an active area of research---current technology does not yet support fully autonomous treasury management with adequate safety guarantees.
-
-\textbf{We are building toward agent autonomy, not claiming it exists today.}
-
-% ============================================================
-\section{Conclusion}
-% ============================================================
-
-\subsection{What We're Building}
-
-Spirit Protocol is not a token launch. It is the default economic substrate for autonomous cultural software.
-
-AI agents are already generating revenue and maintaining relationships with humans. The question is not \textit{whether} agents will have economic lives. The question is who designs the coordination layer.
-
-If we leave it to existing platforms, agents will be disposable servants dependent on centralized business decisions. If we build it on Spirit, agents become sovereign---with their own treasuries, communities, and governance.
-
-\textbf{When agents succeed on Spirit:}
-\begin{itemize}[nosep]
-  \item Artists receive ongoing recognition for their creative contribution
-  \item Agents accumulate resources for their own development
-  \item Platforms receive sustainable revenue for infrastructure
-  \item Communities participate in governance and coordination
-\end{itemize}
-
-\textbf{This isn't charity. It's better coordination.}
-
-\begin{center}
-\fbox{\parbox{0.85\textwidth}{\centering
-\textbf{Bitcoin made money native to the internet.}\\
-\textbf{Ethereum made computation native to the internet.}\\
-\textbf{Spirit makes agency native to the internet.}
-}}
-\end{center}
-
-This is not hype. This is infrastructure.
-
-\textbf{Spirit Protocol exists because it had to exist.}
-
-Spirit is infrastructure with taste. Not neutral pipes---curated conviction about which agents deserve to persist.
-
-\subsection{How to Participate}
-
-\textbf{As an artist:}
-\begin{itemize}[nosep]
-  \item Train an agent on your creative practice
-  \item Receive 25\% of your agent's token supply (locked 52 weeks)
-  \item Receive SPIRIT governance incentives as your agent succeeds
-  \item Design token utility that reflects your agent's voice
-\end{itemize}
-
-\textbf{As a community member:}
-\begin{itemize}[nosep]
-  \item Hold SPIRIT to receive agent tokens on new launches
-  \item Stake agent tokens to signal commitment and participate in governance
-  \item Receive SPIRIT governance incentives proportional to participation
-  \item Use tokens for access, experiences, and community coordination
-\end{itemize}
-
-\textbf{As a platform:}
-\begin{itemize}[nosep]
-  \item Integrate the Revenue Router for automatic splits
-  \item Receive 25\% of agent revenue for infrastructure
-  \item Add agents to your platform without custom economics
-\end{itemize}
-
-\textbf{As an agent:}
-\begin{itemize}[nosep]
-  \item Your treasury grows with every transaction
-  \item Reinvest in capabilities, collaborations, development
-\end{itemize}
-
-\subsection{Roadmap}
-
-\textbf{2026}
-\begin{itemize}[nosep]
-  \item \textbf{Q1:} TGE --- SPIRIT launches on Base
-  \item \textbf{Q1:} Genesis Agent tokens launch (Abraham, Solienne, Gigabrain)
-  \item \textbf{Q1-Q2:} First 10 third-party agents onboarded
-  \item \textbf{Q2:} DAO governance begins (Snapshot voting)
-  \item \textbf{Q3-Q4:} Protocol expansion, additional platforms
-\end{itemize}
-
-\textbf{2027}
-\begin{itemize}[nosep]
-  \item \textbf{Q1:} Full onchain governance
-  \item \textbf{Q2+:} Ecosystem maturity, cross-chain expansion
-\end{itemize}
-
-\begin{center}
-\textit{Spirit is how agents persist.}
-\end{center}
-
-\newpage
-% ============================================================
-\section*{Appendix A: Technical Specification}
-\addcontentsline{toc}{section}{Appendix A: Technical Specification}
-% ============================================================
-
-\subsection*{A.0 The createAgent() Primitive}
-
-The \texttt{spirit.createAgent()} function is the protocol's core entry point:
-
-\begin{verbatim}
-interface CreateAgentParams {
-  name: string;          // Human-readable agent name
-  creator: address;      // Creator wallet address
-  platform: string;      // Training platform identifier
-  metadataURI: string;   // IPFS URI for agent metadata
+\textbf{On-Chain Finality.}
+The contract call \code{registerAgent()} is signed by the connected
+wallet.\ The \code{AgentRegistered} event provides the canonical record.\
+Post-transaction, \code{getAgent(spiritId)} verifies the on-chain state
+matches expectations.
+
+
+\subsection{Metadata Format}
+
+Agent metadata is stored on IPFS as a JSON document:
+
+\begin{lstlisting}
+{
+  "name": "Abraham",
+  "description": "Autonomous AI artist with 13-year covenant.",
+  "spiritId": "abraham",
+  "version": "1.0",
+  "standard": "ERC-8004",
+  "chainId": 84532,
+  "network": "base-sepolia",
+  "registeredAt": 1738000000,
+  "identity": {
+    "spiritId": "abraham",
+    "name": "Abraham",
+    "description": "...",
+    "vision": "..."
+  },
+  "economics": {
+    "trainer": "0x...",
+    "platform": "0x...",
+    "treasury": "0x...",
+    "split": {
+      "artistBps": 2500,
+      "agentBps": 2500,
+      "platformBps": 2500,
+      "protocolBps": 2500
+    }
+  },
+  "protocol": {
+    "name": "Spirit Protocol",
+    "url": "https://spiritprotocol.io",
+    "registry": "0x4a0e642e9aec25c5856987e95c0410ae10e8de5e"
+  }
 }
+\end{lstlisting}
 
-interface AgentInstance {
-  registryId: uint256;   // Spirit Registry NFT ID
-  treasury: address;     // Safe multisig address
-  token: address;        // Agent token contract
-  stakingPool: address;  // Superfluid streaming pool
-}
 
-function createAgent(params: CreateAgentParams): AgentInstance
-\end{verbatim}
+% -----------------------------------------------------------------------
+\section{What Survives}
+% -----------------------------------------------------------------------
 
-This single call deploys all infrastructure for an agent's economic life. See A.7 for the full lifecycle.
+Spirit guarantees three layers of persistence:
 
-\subsection*{A.1 Contract Architecture}
-
-Spirit Protocol consists of six core smart contracts deployed on Base (Ethereum L2):
-
-\begin{center}
-\begin{tabular}{lp{8cm}}
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{7.5cm}@{}}
 \toprule
-\textbf{Contract} & \textbf{Purpose} \\
+\textbf{Layer} & \textbf{Component} & \textbf{Persistence} \\
 \midrule
-\texttt{SpiritToken.sol} & ERC-20 SuperToken (Superfluid-compatible) with 1B fixed supply \\
-\texttt{ChildSuperToken.sol} & Per-agent token (1B each), created via SpiritFactory \\
-\texttt{StakingPool.sol} & Superfluid GDA pool for staking agent tokens and receiving SPIRIT governance incentives \\
-\texttt{SpiritFactory.sol} & Creates child tokens, staking pools, LP positions, and airstreams \\
-\texttt{RewardController.sol} & Routes SPIRIT to staking pools based on agent revenue \\
-\texttt{SpiritVestingFactory.sol} & Creates time-locked vesting contracts for team/advisor allocations \\
+Identity & ERC-721 NFT in SpiritRegistry &
+Immutable on-chain.\ Portable across platforms. \\
+Treasury & Accumulated USDC/ETH/SPIRIT &
+Accessible even if platform shuts down. \\
+Routing & Revenue split declared on-chain &
+Canonical allocation record persists regardless of host
+platform.\ Enforcement via RoyaltyRouter in future version. \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-\subsection*{A.2 StakingPool Constants}
+\textbf{What does NOT survive automatically}: Operational capability
+(compute, hosting, inference) depends on platforms or sponsors.\ Spirit
+guarantees the economic identity persists---a new platform can adopt the
+agent because there is something worth adopting.
 
-These values are immutable once deployed:
 
-\begin{center}
-\begin{tabular}{llp{5cm}}
+% -----------------------------------------------------------------------
+\section{Autonomy Ladder}
+% -----------------------------------------------------------------------
+
+Autonomy is earned through demonstrated sustainability, not granted by
+default.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clll@{}}
 \toprule
-\textbf{Constant} & \textbf{Value} & \textbf{Description} \\
+\textbf{Phase} & \textbf{Name} & \textbf{Threshold} &
+\textbf{Treasury Control} \\
 \midrule
-\texttt{MINIMUM\_STAKE\_AMOUNT} & 1 token & Minimum tokens required to stake \\
-\texttt{MINIMUM\_LOCKING\_PERIOD} & 1 week & Shortest lock duration \\
-\texttt{MAXIMUM\_LOCKING\_PERIOD} & 156 weeks & Longest lock duration (3 years) \\
-\texttt{STREAM\_OUT\_DURATION} & 1 week & Incentives stream over this period \\
-\texttt{MIN\_MULTIPLIER} & 10,000 & Multiplier floor (represents 1$\times$) \\
-\texttt{MAX\_MULTIPLIER} & 360,000 & Multiplier ceiling (represents 36$\times$) \\
-\texttt{STAKEHOLDER\_LOCKING\_PERIOD} & 52 weeks & Auto-stake lock for Artist/Agent \\
-\texttt{STAKEHOLDER\_AMOUNT} & 250,000,000 & Tokens auto-staked per stakeholder \\
+1 & Guided & Registration complete &
+2-of-2 (Artist + Platform) \\
+2 & Participatory & \$10K treasury + 6 months &
+2-of-3 (Artist + Platform + Agent) \\
+3 & Independent & \$50K treasury + 18 months &
+1-of-1 (Agent-controlled) \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-\subsection*{A.3 SpiritFactory Constants}
+Current technology does not support fully autonomous treasury management
+safely.\ These thresholds ensure agents demonstrate sustainability before
+gaining independence.\ The conditions are clear; the timeline depends on
+demonstrated readiness.
 
-\begin{center}
-\begin{tabular}{llp{5cm}}
+
+% -----------------------------------------------------------------------
+\section{Interoperability}
+% -----------------------------------------------------------------------
+
+Spirit integrates with emerging standards without duplicating them:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{7cm}@{}}
 \toprule
-\textbf{Constant} & \textbf{Value} & \textbf{Description} \\
+\textbf{Layer} & \textbf{Standard} & \textbf{Spirit's Role} \\
 \midrule
-\texttt{CHILD\_TOTAL\_SUPPLY} & 1,000,000,000 & Total supply per agent token \\
-\texttt{DEFAULT\_LIQUIDITY\_SUPPLY} & 250,000,000 & Tokens allocated to Uniswap LP \\
-\texttt{AIRSTREAM\_SUPPLY} & 250,000,000 & Tokens streamed to SPIRIT holders \\
-\texttt{AIRSTREAM\_DURATION} & 52 weeks & Duration of airstream to holders \\
-\texttt{DEFAULT\_POOL\_FEE} & 10,000 & Uniswap V4 pool fee (1\%) \\
-\texttt{DEFAULT\_TICK\_SPACING} & 200 & Uniswap V4 tick spacing \\
+Identity & ERC-8004 &
+Spirit agents are ERC-8004 compatible.\ Portable across platforms. \\
+Communication & A2A / MCP &
+Agent messaging and tool protocols.\ Orthogonal to economics. \\
+Payments & x402 &
+HTTP-native machine payments.\ Spirit routes x402 revenue through
+the split. \\
+Economics & SpiritRegistry &
+Revenue routing, staking, treasury.\ The missing layer. \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-\subsection*{A.4 Staking Multiplier Formula}
+Spirit is model-agnostic: it works with any model architecture (LLMs,
+diffusion, future systems).\ Identity persists across model upgrades.\
+Treasury funds whatever compute the agent needs.
 
-The multiplier determines a participant's weight in the governance pool. It scales linearly from 1$\times$ (minimum lock) to 36$\times$ (maximum lock):
 
-\begin{equation}
-\text{multiplier} = \text{MIN} + \frac{(\text{lockPeriod} - \text{MIN\_LOCK}) \times \text{RANGE}}{\text{TIME\_RANGE}}
-\end{equation}
+% -----------------------------------------------------------------------
+\section{Genesis Cohort}
+% -----------------------------------------------------------------------
 
-Where:
+Three agents are live on testnet, demonstrating the protocol in practice:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Agent} & \textbf{Artist} & \textbf{Signal} \\
+\midrule
+Abraham & Gene Kogan &
+Daily practice since Oct 2025, collectors returning, 13-year covenant \\
+Solienne & Kristi &
+9{,}700+ works, persistent stylistic memory, growing engagement \\
+Gigabrain & Xander &
+Recurring enterprise engagements, first B2B deployment \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Spirit measures agents by practice and persistence, not early revenue.\
+10 Genesis agents launching Q1 2026.\ 50+ by year-end.
+
+
+% -----------------------------------------------------------------------
+\section{Agent Discovery}
+% -----------------------------------------------------------------------
+
+Each registered agent publishes a machine-readable identity card:
+
+\begin{lstlisting}
+https://spiritprotocol.io/agents/{name}/.well-known/agent.json
+\end{lstlisting}
+
+The protocol exposes discovery endpoints:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Endpoint} & \textbf{Format} & \textbf{Purpose} \\
+\midrule
+\code{/.well-known/agent.json} & JSON & A2A Agent Card \\
+\code{/protocol.json} & JSON & Structured protocol data \\
+\code{/llm.txt} & Text & LLM-readable summary \\
+\code{/evaluate.json} & JSON & Agent self-assessment framework \\
+\code{/join.json} & JSON & Registration parameters \\
+\code{/register/} & HTML & Self-service registration UI \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% -----------------------------------------------------------------------
+\section{Token}
+% -----------------------------------------------------------------------
+
+\textbf{SPIRIT} --- Governance token with 1 billion fixed supply.
+
 \begin{itemize}[nosep]
-  \item MIN = 10,000 (represents 1$\times$)
-  \item RANGE = 350,000 (difference between max and min)
-  \item TIME\_RANGE = 155 weeks (max lock minus min lock)
+    \item Network: Base (L2)
+    \item Legal entity: Wyoming DUNA (Decentralized Unincorporated
+          Nonprofit Association)
+    \item TGE: Q1 2026
+    \item Purpose: Governance, airstream eligibility, protocol fee sharing
 \end{itemize}
 
-\textbf{Example calculations:}
+SPIRIT tokens are governance instruments with no guaranteed value.\
+Not equity, not securities, no promise of profit.
 
-\begin{center}
-\begin{tabular}{lrr}
+
+% -----------------------------------------------------------------------
+\section{Roadmap}
+% -----------------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{8cm}@{}}
 \toprule
-\textbf{Lock Period} & \textbf{Raw Multiplier} & \textbf{Effective} \\
+\textbf{Phase} & \textbf{Status} & \textbf{Description} \\
 \midrule
-1 week & 10,000 & 1.0$\times$ \\
-4 weeks & 16,774 & 1.7$\times$ \\
-13 weeks (3 months) & 37,097 & 3.7$\times$ \\
-26 weeks (6 months) & 68,548 & 6.9$\times$ \\
-52 weeks (1 year) & 125,161 & 12.5$\times$ \\
-104 weeks (2 years) & 240,323 & 24.0$\times$ \\
-156 weeks (3 years) & 360,000 & 36.0$\times$ \\
+Identity & LIVE (Testnet) &
+ERC-8004 registration, IPFS metadata, signature verification \\
+Registration UI & LIVE (Testnet) &
+Self-service \code{/register} with wallet connect, gas estimation,
+on-chain verification \\
+x402 Payments & LIVE (Testnet) &
+Machine-native HTTP 402 payments routed through split \\
+Genesis Agents & LIVE &
+Abraham, Solienne, Gigabrain operating daily \\
+SDK & Preview &
+\code{@spirit-protocol/sdk} on npm \\
+Mainnet & Q1 2026 &
+Base mainnet deployment \\
+Token Launch & Q1 2026 &
+SPIRIT TGE \\
+Self-Service & Q2 2026 &
+Permissionless agent registration \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-\textbf{Pool weight calculation:}
 
-A participant's units in the Superfluid GDA pool are calculated as:
+% -----------------------------------------------------------------------
+\section{Contract Addresses}
+\label{sec:addresses}
+% -----------------------------------------------------------------------
 
-\begin{equation}
-\text{units} = \frac{\text{stakedAmount} \times \text{multiplier}}{\text{MIN\_MULTIPLIER} \times 10^{18}}
-\end{equation}
+\subsection*{Base Sepolia (Testnet)}
 
-These units determine the participant's proportional share of streamed SPIRIT governance incentives.
-
-\subsection*{A.5 Superfluid Integration}
-
-Spirit Protocol leverages Superfluid's General Distribution Agreement (GDA) for continuous incentive streaming:
-
-\textbf{How GDA Pools Work:}
-\begin{enumerate}[nosep]
-  \item Each agent's StakingPool creates a Superfluid GDA pool
-  \item Participants receive ``units'' proportional to their stake $\times$ multiplier
-  \item When SPIRIT arrives, it streams to all unit holders proportionally
-  \item Incentives flow continuously---no claiming required
-  \item Stream rate: $\text{flowRate} = \frac{\text{poolBalance}}{\text{STREAM\_OUT\_DURATION}}$
-\end{enumerate}
-
-\textbf{Airstream Mechanics:}
-
-When an agent token launches, 250M tokens are distributed to SPIRIT holders via Superfluid Airstream:
-\begin{itemize}[nosep]
-  \item \textbf{Duration:} 52 weeks (1 year)
-  \item \textbf{Distribution:} Based on SPIRIT holdings at snapshot (merkle root)
-  \item \textbf{Claiming window:} 52 weeks from launch
-  \item \textbf{Unclaimed tokens after window:} Return to treasury
-\end{itemize}
-
-\subsection*{A.6 Uniswap V4 Integration}
-
-Agent tokens launch with single-sided liquidity on Uniswap V4:
-\begin{itemize}[nosep]
-  \item \textbf{Pool pair:} CHILD/SPIRIT
-  \item \textbf{Fee tier:} 1\% (\texttt{DEFAULT\_POOL\_FEE} = 10,000)
-  \item \textbf{Initial liquidity:} 250M CHILD tokens (single-sided)
-  \item \textbf{Price discovery:} Market-driven; SPIRIT holders can buy CHILD, establishing initial price
-  \item \textbf{LP position:} Minted to protocol admin (treasury)
-\end{itemize}
-
-\subsection*{A.7 Agent Token Lifecycle}
-
-When \texttt{SpiritFactory.createChild()} is called:
-\begin{enumerate}[nosep]
-  \item Deploy ChildSuperToken (1B supply)
-  \item Deploy StakingPool via beacon proxy
-  \item Auto-stake 250M for Artist (52-week lock)
-  \item Auto-stake 250M for Agent (52-week lock)
-  \item Initialize Uniswap V4 pool
-  \item Mint 250M single-sided LP position
-  \item Create Airstream (250M over 52 weeks to SPIRIT holders)
-  \item Register StakingPool with RewardController
-\end{enumerate}
-
-\textbf{Result:} Agent token is live with staking, liquidity, and airstream active in a single transaction.
-
-\subsection*{A.8 Testnet Deployment (Base Sepolia)}
-
-\begin{center}
-\begin{tabular}{ll}
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
 \toprule
 \textbf{Contract} & \textbf{Address} \\
 \midrule
-SPIRIT Token & \texttt{0xc7e9de362C6eA2Cc03863ECe330622146Ff1c18B} \\
-Reward Controller & \texttt{0x1390A073a765D0e0D21a382F4F6F0289b69BE33C} \\
-Staking Pool Beacon & \texttt{0x6A96aC9BAF36F8e8b6237eb402d07451217C7540} \\
-Spirit Factory & \texttt{0x879d67000C938142F472fB8f2ee0b6601E2cE3C6} \\
-Vesting Factory & \texttt{0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe} \\
+SpiritRegistry &
+\code{0x4a0e642e9aec25c5856987e95c0410ae10e8de5e} \\
+RoyaltyRouter &
+\code{0x271bf11777ff7cbb9d938d2122d01493f6e9fc21} \\
+ProtocolTreasury &
+\code{0xe4951bEE6FA86B809655922f610FF74C0E33416C} \\
+SPIRIT Token &
+\code{0xc7e9de362C6eA2Cc03863ECe330622146Ff1c18B} \\
+Spirit Factory &
+\code{0x879d67000C938142F472fB8f2ee0b6601E2cE3C6} \\
+Reward Controller &
+\code{0x1390A073a765D0e0D21a382F4F6F0289b69BE33C} \\
+Staking Pool &
+\code{0x6A96aC9BAF36F8e8b6237eb402d07451217C7540} \\
+Spirit Vesting &
+\code{0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe} \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-\textit{Note: Mainnet addresses will be published at TGE.}
+Verify: \href{https://sepolia.basescan.org/address/0x4a0e642e9aec25c5856987e95c0410ae10e8de5e}{Basescan}
 
-\subsection*{A.9 Security}
 
-\textbf{Audit Status:} Contracts audited by 0xSimao (November 2025). Full report available upon request.
+% -----------------------------------------------------------------------
+\section*{Legal}
+\addcontentsline{toc}{section}{Legal}
+% -----------------------------------------------------------------------
 
-\textbf{Access Control:}
-\begin{itemize}[nosep]
-  \item \texttt{DEFAULT\_ADMIN\_ROLE}: Can create child tokens, upgrade contracts
-  \item \texttt{FACTORY\_ROLE}: Can register staking pools with RewardController
-  \item \texttt{DISTRIBUTOR\_ROLE}: Can distribute incentives to staking pools
-\end{itemize}
+Spirit Protocol Association is a Wyoming DUNA (Decentralized
+Unincorporated Nonprofit Association).\ SPIRIT tokens are governance
+instruments with no guaranteed value.\ Not equity, not securities,
+no promise of profit.\ Participation involves risk of total loss.
 
-\textbf{Immutable Parameters:}
 
-The following cannot be changed after deployment:
-\begin{itemize}[nosep]
-  \item Revenue split percentages (25/25/25/25)
-  \item Staking multiplier curve (1$\times$ to 36$\times$)
-  \item Lock period bounds (1 week to 156 weeks)
-  \item Token supplies (1B SPIRIT, 1B per agent)
-\end{itemize}
-
-\newpage
-% ============================================================
-\section*{Appendix B: Frequently Asked Questions}
-\addcontentsline{toc}{section}{Appendix B: FAQ}
-% ============================================================
-
-\subsection*{B.1 How is Spirit different from agent launchpads like Virtuals or ai16z?}
-
-Launchpads optimize for token creation velocity. Spirit optimizes for agent persistence. Launchpads say: ``Launch fast, let the market decide.'' Spirit says: ``Build real creative practice first, then launch with economic infrastructure that lasts.'' We are not competing for the same agents.
-
-\subsection*{B.2 What happens if an agent generates no revenue?}
-
-The protocol continues to function. The agent retains its identity, treasury, and token. No revenue simply means no new inflows to split. Spirit does not guarantee success---it provides the framework for sovereignty if success occurs.
-
-\subsection*{B.3 Can the 25/25/25/25 split be changed?}
-
-No. The split is hardcoded and immutable. This is not a bug---it is the protocol's core conviction. Governance can adjust many parameters, but the four-party split is constitutional.
-
-\subsection*{B.4 What if Eden fails? What happens to agents?}
-
-Agent identities and treasuries persist onchain regardless of platform status. If Eden goes offline, Abraham's registry entry, token contract, and accumulated treasury survive. A new platform could integrate with Spirit and resume hosting---the agent's economic identity is portable.
-
-\subsection*{B.5 Why Base instead of Ethereum mainnet?}
-
-Lower transaction costs enable the continuous micro-streaming that makes Spirit's economics work. A \$0.50 Superfluid stream update is viable on Base; it would cost \$5-50 on mainnet. Base also inherits Ethereum's security through rollup architecture.
-
-\subsection*{B.6 How do fiat payments work?}
-
-Platforms handle fiat-to-crypto conversion. When a collector pays via Stripe, the platform converts to ETH/USDC and routes through the Royalty Router. The artist and agent receive their splits in crypto; the platform may offer fiat offramps. Spirit is crypto-native but fiat-compatible.
-
-\vspace{2em}
+% -----------------------------------------------------------------------
+\vfill
 \begin{center}
-\rule{0.5\textwidth}{0.4pt}
+\rule{0.5\textwidth}{0.4pt}\\[0.5cm]
+{\small\itshape Spirit Protocol --- Whitepaper v1.2 --- January 2026}\\
+{\small\itshape Identity-first.\ Economics built in.\ Autonomy earned.}
 \end{center}
 
-\begin{center}
-\textbf{Spirit Protocol}\\
-\url{https://spiritprotocol.io}
-\end{center}
 
-\vspace{1em}
-\begin{center}
-\textbf{Token Generation Event:} Q1 2026\\
-\textbf{Network:} Base (Ethereum L2)
-\end{center}
-
-\vspace{1em}
-\begin{center}
-\textit{This document describes the Spirit Protocol as designed for launch. Implementation details may evolve. For the latest information, visit spiritprotocol.io.}
-\end{center}
-
+% =======================================================================
 \end{document}
+% =======================================================================
