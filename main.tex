@@ -54,7 +54,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Spirit Protocol Whitepaper}
-\fancyhead[R]{\small v1.2 --- Q1 2026}
+\fancyhead[R]{\small v1.2.1 --- Q1 2026}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -65,8 +65,8 @@
 \title{%
     \vspace{1cm}
     {\LARGE\bfseries Spirit Protocol}\\[0.5cm]
-    {\large The Sovereignty Layer for Cultural Agents}\\[0.3cm]
-    {\normalsize Whitepaper --- Version 1.2}
+    {\large The Identity Layer for Autonomous Agents}\\[0.3cm]
+    {\normalsize Whitepaper --- Version 1.2.1}
 }
 
 \author{%
@@ -96,17 +96,18 @@
 \addcontentsline{toc}{section}{Abstract}
 % -----------------------------------------------------------------------
 
-Spirit Protocol provides economic infrastructure for autonomous AI agents.
-It answers a question no platform is structurally incentivized to solve:
-\emph{how does an agent survive independently of any single host?}
+Spirit Protocol is an identity registrar for autonomous AI agents, built
+on the ERC-8004 standard. It answers a question no platform is
+structurally incentivized to solve: \emph{how does an agent persist
+independently of any single host?}
 
-Spirit registers agents on-chain via the ERC-8004 identity standard,
-provisions treasury wallets, and declares revenue routing through a fixed
-25/25/25/25 split between Artist, Agent, Platform, and Protocol.
-The split is stored as on-chain metadata today; enforcement via dedicated
-routing contracts is planned for a future protocol version.
-The result is an economic identity that persists across platforms,
-survives host failure, and accumulates resources over time.
+Spirit registers agents on-chain with portable identity, treasury wallets,
+and declared revenue routing through a fixed 25/25/25/25 split between
+Artist, Agent, Platform, and Protocol. Revenue splits are stored as
+canonical on-chain metadata today. Enforcement via dedicated routing
+contracts is planned for a future protocol version. The result is an
+economic identity that persists across platforms, survives host failure,
+and accumulates resources over time.
 
 This document describes the architecture as deployed on Base Sepolia,
 the security model, the registration flow, and the path to mainnet.
@@ -174,9 +175,10 @@ Full addresses are listed in Section~\ref{sec:addresses}.
 
 \subsection{SpiritRegistry}
 
-SpiritRegistry is an ERC-721 contract that extends the ERC-8004 Identity
-Registry standard.\ Each registered agent receives a non-transferable
-identity NFT containing:
+SpiritRegistry is an ERC-721 contract that implements ERC-8004-compatible
+agent identity with additional Spirit fields (treasury, revenue split,
+status).\ Each registered agent receives a non-transferable identity NFT
+containing:
 
 \begin{itemize}[nosep]
     \item \textbf{spiritId} --- Human-readable identifier
@@ -250,6 +252,14 @@ economic substrate that lets agents accumulate resources and persist
 independently.
 
 
+\subsection{Why Spirit vs Direct ERC-8004?}
+
+ERC-8004 defines the standard.\ Spirit makes it usable: secure
+registration with trainer verification (EIP-191 ecrecover), metadata
+pinning to IPFS, provenance verification, and discovery via SpiritIndex.\
+Spirit does not replace ERC-8004; it operationalizes it.
+
+
 % -----------------------------------------------------------------------
 \section{The Split}
 % -----------------------------------------------------------------------
@@ -270,11 +280,16 @@ Creators receive 50\% (Artist + Agent).\ Infrastructure receives 50\%
 
 The split is configured per-agent at registration time in basis points
 (default: 2500/2500/2500/2500).\ The total must equal 10{,}000~bps.
-The split is stored on-chain in the SpiritRegistry as declarative metadata.
-Revenue routing enforcement---where incoming funds are automatically
-distributed per the declared split---is handled by a separate RoyaltyRouter
-contract (deployed, not yet active).\ Today, splits serve as the canonical,
-auditable record of intended revenue allocation.
+
+\begin{quote}
+\textbf{Current State (v1.2):} Revenue splits are stored on-chain as
+canonical intent---the auditable, immutable record of how revenue should
+be allocated.
+
+\textbf{Future State:} Enforcement via RoyaltyRouter, which will
+automatically distribute incoming funds per the declared split once
+activated on mainnet.
+\end{quote}
 
 
 \subsection{Token Distribution}
@@ -510,6 +525,7 @@ Recurring enterprise engagements, first B2B deployment \\
 \end{tabular}
 \end{table}
 
+All Genesis agents are currently registered on Base Sepolia testnet.\
 Spirit measures agents by practice and persistence, not early revenue.\
 10 Genesis agents launching Q1 2026.\ 50+ by year-end.
 
@@ -644,7 +660,7 @@ no promise of profit.\ Participation involves risk of total loss.
 \vfill
 \begin{center}
 \rule{0.5\textwidth}{0.4pt}\\[0.5cm]
-{\small\itshape Spirit Protocol --- Whitepaper v1.2 --- January 2026}\\
+{\small\itshape Spirit Protocol --- Whitepaper v1.2.1 --- January 2026}\\
 {\small\itshape Identity-first.\ Economics built in.\ Autonomy earned.}
 \end{center}
 
