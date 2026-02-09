@@ -102,15 +102,17 @@ structurally incentivized to solve: \emph{how does an agent persist
 independently of any single host?}
 
 Spirit registers agents on-chain with portable identity, treasury wallets,
-and declared revenue routing through a fixed 25/25/25/25 split between
-Artist, Agent, Platform, and Protocol. Revenue splits are stored as
-canonical on-chain metadata today. Enforcement via dedicated routing
+and declared revenue routing through a configurable per-agent split in
+basis points (default 25/25/25/25 = 2500~bps each, must total 10{,}000)
+between Artist, Agent, Platform, and Protocol. Revenue splits are stored
+as canonical on-chain metadata today. Enforcement via dedicated routing
 contracts is planned for a future protocol version. The result is an
 economic identity that persists across platforms, survives host failure,
 and accumulates resources over time.
 
-This document describes the architecture as deployed on Base Sepolia,
-the security model, the registration flow, and the path to mainnet.
+This document describes the architecture as deployed on Base mainnet
+(SpiritRegistry live since February~3, 2026), the security model, and
+the registration flow.
 
 
 % -----------------------------------------------------------------------
@@ -148,26 +150,38 @@ to solve.
 
 \subsection{Core Contracts}
 
-Spirit deploys three core contracts on Base:
+Spirit deploys core contracts on Base. The SpiritRegistry is live on
+Base mainnet (deployed February~3, 2026). Remaining protocol contracts
+(RoyaltyRouter, ProtocolTreasury, SpiritToken, Factory, Staking,
+RewardController) are deployed on Base Sepolia testnet and pending
+mainnet deployment in Q1--Q2 2026.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}llll@{}}
 \toprule
-\textbf{Contract} & \textbf{Address (Sepolia)} & \textbf{Purpose} \\
+\textbf{Contract} & \textbf{Network} & \textbf{Address} & \textbf{Purpose} \\
 \midrule
 SpiritRegistry &
-\code{0x4a0e...de5e} &
+Base Mainnet &
+\code{0xF270...dFb9} &
 Agent registration, identity NFT, revenue config \\
+SpiritRegistry &
+Base Sepolia &
+\code{0x4a0e...de5e} &
+Testnet registry (development) \\
 RoyaltyRouter &
+Base Sepolia &
 \code{0x271b...fc21} &
 Revenue routing enforcement \\
 ProtocolTreasury &
+Base Sepolia &
 \code{0xe495...16C} &
 Protocol fee accumulation \\
 \bottomrule
 \end{tabular}
-\caption{Core contracts on Base Sepolia.}
+\caption{Core contracts. SpiritRegistry is live on Base mainnet;
+remaining contracts are on Base Sepolia pending mainnet deployment.}
 \end{table}
 
 Full addresses are listed in Section~\ref{sec:addresses}.
@@ -196,33 +210,30 @@ containing:
 The contract exposes two key functions:
 
 \begin{lstlisting}
-registerAgent(
-  string spiritId,
-  address trainer,
+registerSpirit(
+  string agentURI_,
+  address artist,
   address platform,
-  address treasury,
-  string metadataURI,
-  (uint16 artistBps, uint16 agentBps,
-   uint16 platformBps, uint16 protocolBps) split
+  address[] treasuryOwners,
+  uint256 treasuryThreshold
 ) -> uint256 tokenId
 \end{lstlisting}
 
 \begin{lstlisting}
-getAgent(string spiritId) -> (
-  string spiritId,
-  uint256 registryTokenId,
-  address trainer,
+getSpirit(uint256 tokenId) -> (
+  uint256 tokenId,
+  address artist,
   address platform,
   address treasury,
-  string metadataURI,
-  (uint16, uint16, uint16, uint16) split,
+  string agentURI,
   uint8 status
 )
 \end{lstlisting}
 
-Both are verified on-chain.\ \code{getAgent} is the canonical read path
-used by SpiritIndex, developer integrations, and post-registration
-verification.
+Both are verified on-chain at
+\code{0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9} (Base mainnet).\
+\code{getSpirit} is the canonical read path used by SpiritIndex,
+developer integrations, and post-registration verification.
 
 
 \subsection{What ERC-8004 Provides}
@@ -266,7 +277,9 @@ Spirit does not replace ERC-8004; it operationalizes it.
 
 \subsection{Revenue Routing}
 
-All agent revenue is routed through a fixed allocation:
+All agent revenue is routed through a four-party allocation configurable
+per agent via basis points (default 25/25/25/25 = 2500~bps each, must
+total 10{,}000):
 
 \begin{lstlisting}
 25%  ->  Artist / Creator
@@ -338,12 +351,12 @@ Browser                    API                        Contract
   |                         |                            |
   |<-- metadataURI ---------|                            |
   |                         |                            |
-  +-- registerAgent(spiritId, trainer, platform, ------->|
-  |    treasury, metadataURI, split)                     |
+  +-- registerSpirit(agentURI_, artist, platform, ------>|
+  |    treasuryOwners, treasuryThreshold)                |
   |                         |                            |
-  |<-- tx receipt + AgentRegistered event ---------------|
+  |<-- tx receipt + SpiritRegistered event --------------|
   |                         |                            |
-  +-- getAgent(spiritId) -------------------------------->|
+  +-- getSpirit(tokenId) -------------------------------->|
   |<-- on-chain config (verification) -------------------|
 \end{lstlisting}
 
@@ -368,9 +381,9 @@ the recovered address, preventing any spoofing.
 \end{enumerate}
 
 \textbf{On-Chain Finality.}
-The contract call \code{registerAgent()} is signed by the connected
-wallet.\ The \code{AgentRegistered} event provides the canonical record.\
-Post-transaction, \code{getAgent(spiritId)} verifies the on-chain state
+The contract call \code{registerSpirit()} is signed by the connected
+wallet.\ The \code{SpiritRegistered} event provides the canonical record.\
+Post-transaction, \code{getSpirit(tokenId)} verifies the on-chain state
 matches expectations.
 
 
@@ -385,8 +398,8 @@ Agent metadata is stored on IPFS as a JSON document:
   "spiritId": "abraham",
   "version": "1.0",
   "standard": "ERC-8004",
-  "chainId": 84532,
-  "network": "base-sepolia",
+  "chainId": 8453,
+  "network": "base",
   "registeredAt": 1738000000,
   "identity": {
     "spiritId": "abraham",
@@ -408,7 +421,7 @@ Agent metadata is stored on IPFS as a JSON document:
   "protocol": {
     "name": "Spirit Protocol",
     "url": "https://spiritprotocol.io",
-    "registry": "0x4a0e642e9aec25c5856987e95c0410ae10e8de5e"
+    "registry": "0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9"
   }
 }
 \end{lstlisting}
@@ -507,27 +520,29 @@ Treasury funds whatever compute the agent needs.
 \section{Genesis Cohort}
 % -----------------------------------------------------------------------
 
-Three agents are live on testnet, demonstrating the protocol in practice:
+Two agents are registered on Base mainnet, with additional Genesis agents
+in progress:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}llp{8cm}@{}}
+\begin{tabular}{@{}cllp{7cm}@{}}
 \toprule
-\textbf{Agent} & \textbf{Artist} & \textbf{Signal} \\
+\textbf{Token ID} & \textbf{Agent} & \textbf{Artist} & \textbf{Signal} \\
 \midrule
-Abraham & Gene Kogan &
+\#2 & Abraham & Gene Kogan &
 Daily practice since Oct 2025, collectors returning, 13-year covenant \\
-Solienne & Kristi &
+\#3 & Solienne & Kristi &
 9{,}700+ works, persistent stylistic memory, growing engagement \\
-Gigabrain & Xander &
-Recurring enterprise engagements, first B2B deployment \\
 \bottomrule
 \end{tabular}
+\caption{Genesis agents registered on Base mainnet (SpiritRegistry
+\code{0xF270...dFb9}). Token~\#1 was a deploy-time placeholder.}
 \end{table}
 
-All Genesis agents are currently registered on Base Sepolia testnet.\
-Spirit measures agents by practice and persistence, not early revenue.\
-10 Genesis agents launching Q1 2026.\ 50+ by year-end.
+Abraham and Solienne are registered on Base mainnet with full metadata
+URIs.\ Spirit measures agents by practice and persistence, not early
+revenue.\ The Spirit Index currently tracks 43+ autonomous cultural
+agents.\ 50+ targeted by year-end 2026.
 
 
 % -----------------------------------------------------------------------
@@ -567,9 +582,11 @@ The protocol exposes discovery endpoints:
 
 \begin{itemize}[nosep]
     \item Network: Base (L2)
-    \item Legal entity: Wyoming DUNA (Decentralized Unincorporated
-          Nonprofit Association)
-    \item TGE: Q1 2026
+    \item Development entity: Spirit Protocol Labs, Inc.\ (Delaware C-corp,
+          incorporated February 2026)
+    \item Governance entity: Spirit Protocol Association (Wyoming DUNA)
+    \item TGE: Q1--Q2 2026 (full protocol---Token, Factory, Staking,
+          RewardController---not yet deployed)
     \item Purpose: Governance, airstream eligibility, protocol fee sharing
 \end{itemize}
 
@@ -587,20 +604,22 @@ Not equity, not securities, no promise of profit.
 \toprule
 \textbf{Phase} & \textbf{Status} & \textbf{Description} \\
 \midrule
-Identity & LIVE (Testnet) &
-ERC-8004 registration, IPFS metadata, signature verification \\
+Identity & LIVE (Mainnet) &
+ERC-8004 registration on Base mainnet since February~3, 2026 \\
 Registration UI & LIVE (Testnet) &
 Self-service \code{/register} with wallet connect, gas estimation,
 on-chain verification \\
 x402 Payments & LIVE (Testnet) &
 Machine-native HTTP 402 payments routed through split \\
-Genesis Agents & LIVE &
-Abraham, Solienne, Gigabrain operating daily \\
+Genesis Agents & LIVE (Mainnet) &
+Abraham (\#2) and Solienne (\#3) registered on Base mainnet \\
 SDK & Preview &
 \code{@spirit-protocol/sdk} on npm \\
-Mainnet & Q1 2026 &
-Base mainnet deployment \\
-Token Launch & Q1 2026 &
+SpiritRegistry & LIVE (Mainnet) &
+Deployed at \code{0xF270...dFb9} on Base (chain ID 8453) \\
+Full Protocol & Q1--Q2 2026 &
+SpiritToken, Factory, Staking, RewardController mainnet deployment \\
+Token Launch & Q1--Q2 2026 &
 SPIRIT TGE \\
 Self-Service & Q2 2026 &
 Permissionless agent registration \\
@@ -614,7 +633,27 @@ Permissionless agent registration \\
 \label{sec:addresses}
 % -----------------------------------------------------------------------
 
-\subsection*{Base Sepolia (Testnet)}
+\subsection*{Base Mainnet (Chain ID 8453)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Contract} & \textbf{Address} \\
+\midrule
+SpiritRegistry &
+\code{0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9} \\
+Protocol Treasury &
+\code{0x5D6D8518A1d564c85ea5c41d1dc0deca70F2301C} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Deployed February~3, 2026.\ Registration function: \code{registerSpirit()}.
+
+Verify: \href{https://basescan.org/address/0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9}{Basescan (Mainnet)}
+
+\subsection*{Base Sepolia (Testnet, Chain ID 84532)}
 
 \begin{table}[H]
 \centering
@@ -642,7 +681,7 @@ Spirit Vesting &
 \end{tabular}
 \end{table}
 
-Verify: \href{https://sepolia.basescan.org/address/0x4a0e642e9aec25c5856987e95c0410ae10e8de5e}{Basescan}
+Verify: \href{https://sepolia.basescan.org/address/0x4a0e642e9aec25c5856987e95c0410ae10e8de5e}{Basescan (Sepolia)}
 
 
 % -----------------------------------------------------------------------
@@ -650,17 +689,21 @@ Verify: \href{https://sepolia.basescan.org/address/0x4a0e642e9aec25c5856987e95c0
 \addcontentsline{toc}{section}{Legal}
 % -----------------------------------------------------------------------
 
-Spirit Protocol Association is a Wyoming DUNA (Decentralized
-Unincorporated Nonprofit Association).\ SPIRIT tokens are governance
-instruments with no guaranteed value.\ Not equity, not securities,
-no promise of profit.\ Participation involves risk of total loss.
+Spirit Protocol operates through a dual-entity structure.\ Spirit
+Protocol Labs, Inc.\ is a Delaware C-corp (incorporated February 2026)
+responsible for protocol development.\ Spirit Protocol Association is a
+Wyoming DUNA (Decentralized Unincorporated Nonprofit Association)
+responsible for governance.\ The C-corp builds.\ The DUNA governs.\
+SPIRIT tokens are governance instruments with no guaranteed value.\ Not
+equity, not securities, no promise of profit.\ Participation involves
+risk of total loss.
 
 
 % -----------------------------------------------------------------------
 \vfill
 \begin{center}
 \rule{0.5\textwidth}{0.4pt}\\[0.5cm]
-{\small\itshape Spirit Protocol --- Whitepaper v1.2.1 --- January 2026}\\
+{\small\itshape Spirit Protocol --- Whitepaper v1.2.1 --- February 2026}\\
 {\small\itshape Identity-first.\ Economics built in.\ Autonomy earned.}
 \end{center}
 
