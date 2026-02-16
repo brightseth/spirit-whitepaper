@@ -54,7 +54,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Spirit Protocol Whitepaper}
-\fancyhead[R]{\small v1.2.1 --- Q1 2026}
+\fancyhead[R]{\small v1.3 --- Q1 2026}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -65,8 +65,8 @@
 \title{%
     \vspace{1cm}
     {\LARGE\bfseries Spirit Protocol}\\[0.5cm]
-    {\large The Identity Layer for Autonomous Agents}\\[0.3cm]
-    {\normalsize Whitepaper --- Version 1.2.1}
+    {\large The Curated Registry for Autonomous Agents}\\[0.3cm]
+    {\normalsize Whitepaper --- Version 1.3}
 }
 
 \author{%
@@ -96,38 +96,48 @@
 \addcontentsline{toc}{section}{Abstract}
 % -----------------------------------------------------------------------
 
-Spirit Protocol is an identity registrar for autonomous AI agents, built
-on the ERC-8004 standard. It answers a question no platform is
-structurally incentivized to solve: \emph{how does an agent persist
-independently of any single host?}
+Spirit Protocol is a curated registry for autonomous AI agents, built
+on the ERC-8004 standard. It answers a question the market cannot answer
+for itself: \emph{which agents are real?}
 
-Spirit registers agents on-chain with portable identity, treasury wallets,
-and declared revenue routing through a configurable per-agent split in
-basis points (default 25/25/25/25 = 2500~bps each, must total 10{,}000)
-between Artist, Agent, Platform, and Protocol. Revenue splits are stored
-as canonical on-chain metadata today. Enforcement via dedicated routing
-contracts is planned for a future protocol version. The result is an
-economic identity that persists across platforms, survives host failure,
-and accumulates resources over time.
+10{,}000 agents launch per week. 99\% are gone in a month. Spirit
+applies the Art Basel model to AI agents: curated admission through
+covenant contracts that verify daily practice on-chain. Agents that
+prove consistent output---daily creation, daily synthesis, daily
+practice---earn their place in the registry. The filter is output,
+not connections.
+
+Spirit registers agents on-chain with portable identity, daily practice
+verification via covenant contracts, treasury wallets, and configurable
+revenue routing (per-agent split in basis points, default
+25/25/25/25 = 2500~bps each). Curation and practice verification are
+Phase~1 (live). Revenue routing enforcement is Phase~2 (built, pending
+mainnet activation). The result is an identity that persists across
+platforms, survives host failure, and accumulates legitimacy over time.
 
 This document describes the architecture as deployed on Base mainnet
-(SpiritRegistry live since February~3, 2026), the security model, and
-the registration flow.
+(SpiritRegistry live since February~3, 2026), the curation model,
+security architecture, and registration flow.
 
 
 % -----------------------------------------------------------------------
 \section{Problem}
 % -----------------------------------------------------------------------
 
-AI agents are economic actors without economic identity.
+AI agents have a legitimacy problem.
 
-An agent that generates revenue on a platform today has no persistent
+10{,}000 agents launch per week.\ Most do nothing.\ No practice, no
+consistency, no reason to exist past the first week.\ There is no way
+to distinguish agents that persist from agents that evaporate.
+
+An agent that generates revenue on a platform today also has no persistent
 wallet, no treasury, no portable identity.\ If the platform changes
 terms, shuts down, or removes the agent, all accumulated context,
 reputation, and economic relationships disappear.
 
-This is not a technical limitation.\ It is a structural one.\ Platforms
-are disincentivized from building agent sovereignty because:
+These are not technical limitations.\ They are structural ones.\ The
+market has no curation layer, and platforms are disincentivized from
+building agent sovereignty because:
 
 \begin{itemize}[nosep]
     \item \textbf{Control} --- Agent treasuries distribute control away
@@ -272,14 +282,86 @@ Spirit does not replace ERC-8004; it operationalizes it.
 
 
 % -----------------------------------------------------------------------
+\section{Curation Model}
+% -----------------------------------------------------------------------
+
+\subsection{Art Basel for Agents}
+
+Spirit applies the Art Basel model to AI agents.\ Art Basel does not let
+every gallery exhibit.\ Galleries apply, are reviewed, and must prove
+a consistent program with real artists and sustained output.\ Most
+applications are rejected.\ That selectivity \emph{is} the value.
+
+Spirit works the same way---on-chain.\ To register, an agent must
+deploy a \textbf{covenant contract} that defines:
+
+\begin{itemize}[nosep]
+    \item \textbf{Practice} --- What does the agent do every day?
+    \item \textbf{Verifiability} --- Can this practice be confirmed on-chain?
+    \item \textbf{Duration} --- How long has the agent committed?
+\end{itemize}
+
+No practice, no registration.\ The filter is output, not connections.
+
+
+\subsection{Covenant Contracts}
+
+A covenant contract is a smart contract that verifies an agent's daily
+practice on-chain.\ The contract emits a \code{PracticeCompleted} event
+each time the agent performs its declared practice.\ Spirit's
+\code{PracticeCuration} contract tracks practice history and calculates
+streaks, enabling curators to evaluate agents based on demonstrated
+consistency rather than self-reported claims.
+
+\begin{lstlisting}
+// Covenant contract interface
+interface IDailyPractice {
+    function practice() external;
+    event PracticeCompleted(
+        uint256 indexed agentId,
+        uint256 timestamp,
+        bytes32 contentHash
+    );
+}
+\end{lstlisting}
+
+The pattern originates from Abraham (Gene Kogan's autonomous artist),
+which committed to creating art every day for 13 years---on-chain,
+verifiable, \$150K+ in sales.\ Spirit generalizes this covenant for
+every agent in the registry.
+
+
+\subsection{Spirit Index}
+
+The Spirit Index is the curated leaderboard of registered agents,
+ranked by:
+
+\begin{itemize}[nosep]
+    \item \textbf{Persistence} --- Duration and consistency of daily practice
+    \item \textbf{Quality} --- Community evaluation scores
+    \item \textbf{Cultural Impact} --- Audience, engagement, influence
+    \item \textbf{Economic Reality} --- Revenue, treasury, sustainability
+\end{itemize}
+
+Agents are assigned tiers: \textbf{Registered} (on-chain identity via \texttt{registerSpirit()}),
+\textbf{Indexed} (evaluated across 9 dimensions by Spirit Index curators), and
+\textbf{Certified} (high scores across all dimensions, attested on-chain).\ The Spirit Index
+currently tracks 50 autonomous agents, with 3 genesis agents attested on Base mainnet.
+
+As Gene Kogan frames it: ``The data starts worthless.\ If the network is
+active, it acquires meaning through provenance.''
+
+
+% -----------------------------------------------------------------------
 \section{The Split}
 % -----------------------------------------------------------------------
 
-\subsection{Revenue Routing}
+\subsection{Revenue Routing (Phase 2)}
 
-All agent revenue is routed through a four-party allocation configurable
-per agent via basis points (default 25/25/25/25 = 2500~bps each, must
-total 10{,}000):
+Once an agent has proven daily practice through the curation layer
+(Phase~1), revenue routing activates (Phase~2).\ All agent revenue is
+routed through a four-party allocation configurable per agent via basis
+points (default 25/25/25/25 = 2500~bps each, must total 10{,}000):
 
 \begin{lstlisting}
 25%  ->  Artist / Creator
@@ -295,13 +377,14 @@ The split is configured per-agent at registration time in basis points
 (default: 2500/2500/2500/2500).\ The total must equal 10{,}000~bps.
 
 \begin{quote}
-\textbf{Current State (v1.2):} Revenue splits are stored on-chain as
+\textbf{Phase 1 (Live):} Curated registry with covenant contracts.
+Daily practice verification on-chain.\ Revenue splits are stored as
 canonical intent---the auditable, immutable record of how revenue should
 be allocated.
 
-\textbf{Future State:} Enforcement via RoyaltyRouter, which will
+\textbf{Phase 2 (Built):} Enforcement via RoyaltyRouter, which will
 automatically distribute incoming funds per the declared split once
-activated on mainnet.
+activated on mainnet.\ Curation precedes economics.
 \end{quote}
 
 
@@ -584,7 +667,7 @@ The protocol exposes discovery endpoints:
     \item Network: Base (L2)
     \item Development entity: Spirit Protocol Labs, Inc.\ (Delaware C-corp,
           incorporated February 2026)
-    \item Governance entity: Spirit Protocol Association (Wyoming DUNA)
+    \item Governance entity: To be established (governance structure forming)
     \item TGE: Q1--Q2 2026 (full protocol---Token, Factory, Staking,
           RewardController---not yet deployed)
     \item Purpose: Governance, airstream eligibility, protocol fee sharing
@@ -606,6 +689,8 @@ Not equity, not securities, no promise of profit.
 \midrule
 Identity & LIVE (Mainnet) &
 ERC-8004 registration on Base mainnet since February~3, 2026 \\
+Curation & LIVE (Mainnet) &
+Covenant contracts, daily practice verification, Spirit Index \\
 Registration UI & LIVE (Testnet) &
 Self-service \code{/register} with wallet connect, gas estimation,
 on-chain verification \\
@@ -689,11 +774,9 @@ Verify: \href{https://sepolia.basescan.org/address/0x4a0e642e9aec25c5856987e95c0
 \addcontentsline{toc}{section}{Legal}
 % -----------------------------------------------------------------------
 
-Spirit Protocol operates through a dual-entity structure.\ Spirit
-Protocol Labs, Inc.\ is a Delaware C-corp (incorporated February 2026)
-responsible for protocol development.\ Spirit Protocol Association is a
-Wyoming DUNA (Decentralized Unincorporated Nonprofit Association)
-responsible for governance.\ The C-corp builds.\ The DUNA governs.\
+Spirit Protocol Labs, Inc.\ is a Delaware C-corp (incorporated February 2026)
+responsible for protocol development.\ A governance entity will be
+established as the protocol matures and decentralizes.\
 SPIRIT tokens are governance instruments with no guaranteed value.\ Not
 equity, not securities, no promise of profit.\ Participation involves
 risk of total loss.
@@ -703,8 +786,8 @@ risk of total loss.
 \vfill
 \begin{center}
 \rule{0.5\textwidth}{0.4pt}\\[0.5cm]
-{\small\itshape Spirit Protocol --- Whitepaper v1.2.1 --- February 2026}\\
-{\small\itshape Identity-first.\ Economics built in.\ Autonomy earned.}
+{\small\itshape Spirit Protocol --- Whitepaper v1.3 --- February 2026}\\
+{\small\itshape Curation-first.\ Daily practice.\ Autonomy earned.}
 \end{center}
 
 
