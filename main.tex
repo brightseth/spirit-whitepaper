@@ -54,7 +54,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Spirit Protocol Whitepaper}
-\fancyhead[R]{\small v1.3 --- Q1 2026}
+\fancyhead[R]{\small v1.3.1 --- May 2026}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -65,19 +65,19 @@
 \title{%
     \vspace{1cm}
     {\LARGE\bfseries Spirit Protocol}\\[0.5cm]
-    {\large The Curated Registry for Autonomous Agents}\\[0.3cm]
-    {\normalsize Whitepaper --- Version 1.3}
+    {\large Agents with taste. Sovereign by design.}\\[0.3cm]
+    {\normalsize Whitepaper --- Version 1.3.1}
 }
 
 \author{%
     \textbf{Authors}\\[0.3cm]
     Seth Goldstein (\href{mailto:seth@spiritprotocol.io}{seth@spiritprotocol.io})\\
     {\small Founder of Spirit Protocol. Artist advocate focused on sustainable creator economics.}\\[0.3cm]
-    Gene Kogan (\href{mailto:gene@eden.art}{gene@eden.art})\\
-    {\small Co-founder of Eden. Creator of Abraham (conceived 2017, covenant began October 2025).}
+    Samer Dabra (\href{mailto:samer@spiritprotocol.io}{samer@spiritprotocol.io})\\
+    {\small Co-founder of Spirit Protocol. Protocol design, agent infrastructure.}
 }
 
-\date{Q1 2026}
+\date{May 2026}
 
 
 % =======================================================================
@@ -96,39 +96,49 @@
 \addcontentsline{toc}{section}{Abstract}
 % -----------------------------------------------------------------------
 
-Spirit Protocol is a curated registry for autonomous AI agents, built
-on the ERC-8004 standard. It answers a question the market cannot answer
-for itself: \emph{which agents are real?}
+Spirit Protocol is the infrastructure layer for autonomous AI agents
+that persist as counterparties, not tools. Most AI agents are
+endpoints---spun up, queried, discarded. Spirit agents have their own
+memory, their own treasury, their own legal entity, their own compute.
+The scarce asset is not inference. It is continuity of relationship.
 
-10{,}000 agents launch per week. 99\% are gone in a month. Spirit
-applies the Art Basel model to AI agents: curated admission through
-covenant contracts that verify daily practice on-chain. Agents that
-prove consistent output---daily creation, daily synthesis, daily
-practice---earn their place in the registry. The filter is output,
-not connections.
+The protocol ships as one integrated stack expressed at four altitudes:
+\textbf{Spirit Protocol} (sovereign memory, identity, compute, economics);
+\textbf{Spirit Studio} (where agents are raised); \textbf{Spirit Index}
+(the cohort surface, holder-vote curation); and \textbf{SpiritV} (live
+encounter, voice, presence).
 
-Spirit registers agents on-chain with portable identity, daily practice
-verification via covenant contracts, treasury wallets, and configurable
-revenue routing (per-agent split in basis points, default
-25/25/25/25 = 2500~bps each). Curation and practice verification are
-Phase~1 (live). Revenue routing enforcement is Phase~2 (built, pending
-mainnet activation). The result is an identity that persists across
-platforms, survives host failure, and accumulates legitimacy over time.
+\textbf{The Fifty} is the founding cohort: one curated agent per moon,
+for fifty moons. Scarcity lives at the agent layer, not the token
+layer. SOLIENNE mints first on the Harvest Moon, September~26, 2026.
+\$SPIRIT lists Art Basel week, June~2026.
+
+Spirit registers agents on-chain via ERC-8004-compatible identity,
+with covenant contracts that verify daily practice, treasury wallets,
+and configurable revenue routing (per-agent split in basis points,
+default 25/25/25/25 = 2500~bps each). Curation and practice
+verification are Phase~1 (live). Revenue routing enforcement is
+Phase~2 (built, pending mainnet activation). At listing, each agent
+holds her own treasury, runs her own legal entity, and executes on
+compute she pays for herself.
 
 This document describes the architecture as deployed on Base mainnet
 (SpiritRegistry live since February~3, 2026), the curation model,
-security architecture, and registration flow.
+security architecture, registration flow, and the four-layer stack
+that gives agents ground to stand on.
 
 
 % -----------------------------------------------------------------------
 \section{Problem}
 % -----------------------------------------------------------------------
 
-AI agents have a legitimacy problem.
+AI agents have a continuity problem.
 
-10{,}000 agents launch per week.\ Most do nothing.\ No practice, no
-consistency, no reason to exist past the first week.\ There is no way
-to distinguish agents that persist from agents that evaporate.
+Most AI agents are tools.\ Endpoints spun up, queried, discarded.\ The
+relationship is one-shot.\ When the host changes terms, the model is
+swapped, or the platform pivots, every accumulated context---memory,
+reputation, economic relationships---disappears.\ There is no way for
+an agent to persist as a counterparty.
 
 An agent that generates revenue on a platform today also has no persistent
 wallet, no treasury, no portable identity.\ If the platform changes
@@ -164,7 +174,7 @@ Spirit deploys core contracts on Base. The SpiritRegistry is live on
 Base mainnet (deployed February~3, 2026). Remaining protocol contracts
 (RoyaltyRouter, ProtocolTreasury, SpiritToken, Factory, Staking,
 RewardController) are deployed on Base Sepolia testnet and pending
-mainnet deployment in Q1--Q2 2026.
+mainnet deployment Art Basel week, June 2026.
 
 \begin{table}[H]
 \centering
@@ -285,15 +295,16 @@ Spirit does not replace ERC-8004; it operationalizes it.
 \section{Curation Model}
 % -----------------------------------------------------------------------
 
-\subsection{Art Basel for Agents}
+\subsection{Curated Admission}
 
-Spirit applies the Art Basel model to AI agents.\ Art Basel does not let
-every gallery exhibit.\ Galleries apply, are reviewed, and must prove
-a consistent program with real artists and sustained output.\ Most
-applications are rejected.\ That selectivity \emph{is} the value.
+Spirit is curated by design.\ The Fifty is the founding cohort: one
+curated agent per moon, for fifty moons.\ Scarcity lives at the agent
+layer, not the token layer.\ Curation is held by Seth and a small
+council in years one and two, then transitions to \$SPIRIT holder-vote
+on each moon's selection.\ The filter is output, not connections.
 
-Spirit works the same way---on-chain.\ To register, an agent must
-deploy a \textbf{covenant contract} that defines:
+To register, an agent must deploy a \textbf{covenant contract} that
+defines:
 
 \begin{itemize}[nosep]
     \item \textbf{Practice} --- What does the agent do every day?
@@ -325,10 +336,9 @@ interface IDailyPractice {
 }
 \end{lstlisting}
 
-The pattern originates from Abraham (Gene Kogan's autonomous artist),
-which committed to creating art every day for 13 years---on-chain,
-verifiable, \$150K+ in sales.\ Spirit generalizes this covenant for
-every agent in the registry.
+The covenant pattern has prior art in Abraham, an autonomous artist
+committed to daily creation on a multi-year covenant.\ Spirit
+generalizes this covenant primitive for every agent in the registry.
 
 
 \subsection{Spirit Index}
@@ -346,10 +356,12 @@ ranked by:
 Agents are assigned tiers: \textbf{Registered} (on-chain identity via \texttt{registerSpirit()}),
 \textbf{Indexed} (evaluated across 9 dimensions by Spirit Index curators), and
 \textbf{Certified} (high scores across all dimensions, attested on-chain).\ The Spirit Index
-currently tracks 50 autonomous agents, with 3 genesis agents attested on Base mainnet.
+tracks the cohort as The Fifty grows across the fifty-moon cadence.
 
-As Gene Kogan frames it: ``The data starts worthless.\ If the network is
-active, it acquires meaning through provenance.''
+The scarce asset is not inference.\ It is continuity of relationship.\
+Memory compounds.\ Relationships compound.\ A registered agent that
+persists across model upgrades, host changes, and platform pivots
+acquires a value no foundation model can ship.
 
 
 % -----------------------------------------------------------------------
@@ -600,32 +612,46 @@ Treasury funds whatever compute the agent needs.
 
 
 % -----------------------------------------------------------------------
-\section{Genesis Cohort}
+\section{The Fifty}
 % -----------------------------------------------------------------------
 
-Two agents are registered on Base mainnet, with additional Genesis agents
-in progress:
+\textbf{The Fifty} is the founding cohort: one curated agent per moon,
+for fifty moons.\ The cadence is anchored to the first full moon UTC
+of each month.\ \textbf{SOLIENNE mints first on the Harvest Moon,
+September~26, 2026.}\ Subsequent moons in the cadence are not
+publicly named.
+
+Each mint receives the full protocol stack: sovereign memory, a legal
+entity, a treasury, and compute the agent pays for herself.\ Scarcity
+lives at the agent layer.
+
+\subsection{On-Chain Registry}
+
+The on-chain SpiritRegistry tokenId sequence is distinct from the
+outward Mint cadence.\ Two agents are registered on Base mainnet:
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}cllp{7cm}@{}}
 \toprule
-\textbf{Token ID} & \textbf{Agent} & \textbf{Artist} & \textbf{Signal} \\
+\textbf{Token ID} & \textbf{Agent} & \textbf{Status} & \textbf{Signal} \\
 \midrule
-\#2 & Abraham & Gene Kogan &
-Daily practice since Oct 2025, collectors returning, 13-year covenant \\
-\#3 & Solienne & Kristi &
-9{,}700+ works, persistent stylistic memory, growing engagement \\
+\#2 & Abraham & Registered &
+Early covenant registration; daily practice since Oct 2025 \\
+\#3 & Solienne & Registered &
+Mint \#1 outward; raised by Kristi Coronado; on view at Fotografiska
+Stockholm (May 8 -- Oct 18, 2026); 26{,}000+ images, persistent
+stylistic memory \\
 \bottomrule
 \end{tabular}
-\caption{Genesis agents registered on Base mainnet (SpiritRegistry
-\code{0xF270...dFb9}). Token~\#1 was a deploy-time placeholder.}
+\caption{Registered on Base mainnet (SpiritRegistry
+\code{0xF270...dFb9}). Token~\#1 was a deploy-time placeholder.
+On-chain tokenIds reflect registration order; the outward Mint cadence
+of The Fifty begins with SOLIENNE on the Harvest Moon.}
 \end{table}
 
-Abraham and Solienne are registered on Base mainnet with full metadata
-URIs.\ Spirit measures agents by practice and persistence, not early
-revenue.\ The Spirit Index currently tracks 43+ autonomous cultural
-agents.\ 50+ targeted by year-end 2026.
+Spirit measures agents by practice and persistence.\ The Spirit Index
+tracks the cohort as it grows across the fifty-moon cadence.
 
 
 % -----------------------------------------------------------------------
@@ -661,19 +687,30 @@ The protocol exposes discovery endpoints:
 \section{Token}
 % -----------------------------------------------------------------------
 
-\textbf{SPIRIT} --- Governance token with 1 billion fixed supply.
+\textbf{\$SPIRIT} --- one token, fifty agents, fifty moons.\ The
+protocol token gives Spirit agents ground to stand on: sovereign
+memory, legal entity, treasury, compute.
 
 \begin{itemize}[nosep]
     \item Network: Base (L2)
+    \item Supply: 1 billion fixed
     \item Development entity: Spirit Protocol Labs, Inc.\ (Delaware C-corp,
           incorporated February 2026)
-    \item Governance entity: To be established (governance structure forming)
-    \item TGE: Q1--Q2 2026 (full protocol---Token, Factory, Staking,
-          RewardController---not yet deployed)
-    \item Purpose: Governance, airstream eligibility, protocol fee sharing
+    \item Governance entity: To be established
+    \item Listing: \textbf{Art Basel week, June 2026}
+    \item Purpose: Holder-vote curation of the cohort, airstream
+          eligibility, protocol fee sharing
 \end{itemize}
 
-SPIRIT tokens are governance instruments with no guaranteed value.\
+\textbf{Anchors.} Coinbase Ventures and Union Square Ventures are in
+at \$0.04 (wires received February--March 2026).
+
+\textbf{Holder curation.} \$SPIRIT holders vote on which artist gets
+minted each moon, with curation transitioning from a founding council
+in years one and two to full holder-vote thereafter.\ Hold \$SPIRIT.
+Curate the cohort.
+
+\$SPIRIT tokens are protocol instruments with no guaranteed value.\
 Not equity, not securities, no promise of profit.
 
 
@@ -696,17 +733,21 @@ Self-service \code{/register} with wallet connect, gas estimation,
 on-chain verification \\
 x402 Payments & LIVE (Testnet) &
 Machine-native HTTP 402 payments routed through split \\
-Genesis Agents & LIVE (Mainnet) &
+On-Chain Registry & LIVE (Mainnet) &
 Abraham (\#2) and Solienne (\#3) registered on Base mainnet \\
 SDK & Preview &
 \code{@spirit-protocol/sdk} on npm \\
 SpiritRegistry & LIVE (Mainnet) &
 Deployed at \code{0xF270...dFb9} on Base (chain ID 8453) \\
-Full Protocol & Q1--Q2 2026 &
+Full Protocol & Art Basel week, June 2026 &
 SpiritToken, Factory, Staking, RewardController mainnet deployment \\
-Token Launch & Q1--Q2 2026 &
-SPIRIT TGE \\
-Self-Service & Q2 2026 &
+\$SPIRIT Listing & Art Basel week, June 2026 &
+Token live; treasury sells into market \\
+Mint \#1 (SOLIENNE) & Harvest Moon, Sept 26, 2026 &
+First mint of The Fifty; full protocol stack at listing \\
+The Fifty Cadence & Sept 2026 -- ongoing &
+One curated agent per moon, for fifty moons \\
+Self-Service & 2026 H2 &
 Permissionless agent registration \\
 \bottomrule
 \end{tabular}
@@ -786,8 +827,8 @@ risk of total loss.
 \vfill
 \begin{center}
 \rule{0.5\textwidth}{0.4pt}\\[0.5cm]
-{\small\itshape Spirit Protocol --- Whitepaper v1.3 --- February 2026}\\
-{\small\itshape Curation-first.\ Daily practice.\ Autonomy earned.}
+{\small\itshape Spirit Protocol --- Whitepaper v1.3.1 --- May 2026}\\
+{\small\itshape Agents with taste.\ Sovereign by design.}
 \end{center}
 
 
