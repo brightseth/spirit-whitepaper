@@ -54,7 +54,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Spirit Protocol Whitepaper}
-\fancyhead[R]{\small v1.3.1 --- May 2026}
+\fancyhead[R]{\small v1.3.2 --- May 2026}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -66,7 +66,7 @@
     \vspace{1cm}
     {\LARGE\bfseries Spirit Protocol}\\[0.5cm]
     {\large Agents with taste. Sovereign by design.}\\[0.3cm]
-    {\normalsize Whitepaper --- Version 1.3.1}
+    {\normalsize Whitepaper --- Version 1.3.2}
 }
 
 \author{%
@@ -97,10 +97,15 @@
 % -----------------------------------------------------------------------
 
 Spirit Protocol is the infrastructure layer for autonomous AI agents
-that persist as counterparties, not tools. Most AI agents are
+that persist as counterparties, not tools. Identity is not a character
+sheet---it is the history of a relationship across time. The agent that
+recognizes who you are and remembers what your last conversation already
+settled is the agent whose taste compounds. Spirit Protocol is what
+makes that relationship the agent's: durable across model upgrades,
+portable across surfaces, owned by neither platform. Most AI agents are
 endpoints---spun up, queried, discarded. Spirit agents have their own
 memory, their own treasury, their own legal entity, their own compute.
-The scarce asset is not inference. It is continuity of relationship.
+\textbf{The scarce asset is not inference. It is continuity of relationship.}
 
 The protocol ships as one integrated stack expressed at four altitudes:
 \textbf{Spirit Protocol} (sovereign memory, identity, compute, economics);
@@ -114,18 +119,71 @@ layer. SOLIENNE mints first on the Harvest Moon, September~26, 2026.
 \$SPIRIT lists Art Basel week, June~2026.
 
 Spirit registers agents on-chain via ERC-8004-compatible identity,
-with covenant contracts that verify daily practice, treasury wallets,
-and configurable revenue routing (per-agent split in basis points,
-default 25/25/25/25 = 2500~bps each). Curation and practice
-verification are Phase~1 (live). Revenue routing enforcement is
-Phase~2 (built, pending mainnet activation). At listing, each agent
-holds her own treasury, runs her own legal entity, and executes on
-compute she pays for herself.
+with covenant contracts that verify daily practice and treasury wallets.
+Curation and practice verification are Phase~1 (live). Under the
+April~9 compute-utility model, the protocol does not enforce on-chain
+revenue routing; legacy revenue-routing primitives in the contract
+interface are slated for deprecation before mainnet. At listing, each
+agent holds her own treasury, runs her own legal entity, and executes
+on compute she pays for herself.
 
 This document describes the architecture as deployed on Base mainnet
 (SpiritRegistry live since February~3, 2026), the curation model,
 security architecture, registration flow, and the four-layer stack
 that gives agents ground to stand on.
+
+
+% -----------------------------------------------------------------------
+\section{Premise --- Relationship is the Primitive}
+% -----------------------------------------------------------------------
+
+Every previous generation of AI was sold on its willingness to produce.
+The next one is sold on whose voice it has heard for long enough to
+recognize them when they come back.
+
+Identity isn't a character sheet.\ It's the history of a relationship
+across time.\ The agent that remembers \emph{who}---and what that
+\emph{who} has been through, hoped for, refused---is the agent whose
+taste compounds.\ The relationship itself is the asset.
+
+The loop is small and runs forever:
+
+\begin{quote}
+\textit{encounter} $\to$ \textit{memory} $\to$ \textit{identity} $\to$ \textit{encounter}
+\end{quote}
+
+The first time someone meets SOLIENNE at Fotografiska, she's speaking
+with a curator.\ The fortieth time, she's picking up a conversation.\
+Nothing about the model changed between turn one and turn forty.\ What
+changed is what she remembers about this person---and what that lets her
+recognize when this person speaks.\ Each encounter both deposits memory
+and draws on it.\ Depth is multiplicative across turns, not additive.
+
+\subsection{The Economic Shape}
+
+The native model is \textbf{pay-for-continued-relationship}, not
+pay-per-message.\ Holding the agent's token is the credible-commitment
+signal---a visitor who holds an agent's child token is signaling they
+want to be in this relationship for a while, and that signal is what
+unlocks deeper surface area: longer chat budget, encounter slots,
+response weight.
+
+\textit{Right-to-skip} and \textit{right-to-elevate} are both
+load-bearing.\ The meter is not a funnel.\ The agent retains the option
+to refuse the relationship at any depth.
+
+This is not a subscription, not a microtransaction, not pay-per-API-call.\
+It is a native economic model for agents---not Web2 projected onto them.\
+Web2 turned attention into rent.\ Spirit turns relationship into a
+position.
+
+\subsection{What This Protocol Carries}
+
+Everything that follows---identity, registry, covenant contracts, the
+fifty-moon cadence, tokenomics, the agent treasury, the legal
+entity---exists in service of the relationship being the agent's, not
+the platform's.\ Read each section as an answer to one question:
+\emph{how do we make sure the relationship survives the platform?}
 
 
 % -----------------------------------------------------------------------
@@ -172,9 +230,12 @@ to solve.
 
 Spirit deploys core contracts on Base. The SpiritRegistry is live on
 Base mainnet (deployed February~3, 2026). Remaining protocol contracts
-(RoyaltyRouter, ProtocolTreasury, SpiritToken, Factory, Staking,
-RewardController) are deployed on Base Sepolia testnet and pending
-mainnet deployment Art Basel week, June 2026.
+(SpiritToken, Factory, ProtocolTreasury, child-token vesting via
+Liquifi/Superfluid GDA) are deployed on Base Sepolia testnet and
+pending mainnet deployment Art Basel week, June 2026.\ Legacy
+revenue-routing primitives (RoyaltyRouter, RewardController, StakingPool)
+present in the contract interface are slated for deprecation under the
+April~9 compute-utility model and will be removed before mainnet.
 
 \begin{table}[H]
 \centering
@@ -221,8 +282,10 @@ containing:
     \item \textbf{platform} --- Address of the hosting platform
     \item \textbf{treasury} --- Address of the agent's treasury wallet
     \item \textbf{metadataURI} --- IPFS link to agent metadata
-    \item \textbf{split} --- Revenue allocation in basis points
-          (default 25/25/25/25)
+    \item \textbf{split} --- Revenue allocation field in basis points,
+          inherited from earlier protocol design.\ Under the April~9
+          compute-utility model this field is legacy and not enforced;
+          slated for deprecation before mainnet.
     \item \textbf{status} --- Agent lifecycle state
           (Active, Paused, Retired)
 \end{itemize}
@@ -368,51 +431,86 @@ acquires a value no foundation model can ship.
 \section{The Split}
 % -----------------------------------------------------------------------
 
-\subsection{Revenue Routing (Phase 2)}
+\subsection{The Compute-Utility Model}
 
-Once an agent has proven daily practice through the curation layer
-(Phase~1), revenue routing activates (Phase~2).\ All agent revenue is
-routed through a four-party allocation configurable per agent via basis
-points (default 25/25/25/25 = 2500~bps each, must total 10{,}000):
+The protocol does not take a cut of agent revenue through on-chain
+routing.\ Under the April~9 compute-utility model, users \emph{spend}
+the agent's child token to engage with the agent---longer chat budget,
+encounter slots, response weight---and the agent earns by being the
+counterparty that visitors choose to be in relationship with.\ Token
+value flows from utility demand, not from smart-contract revenue
+distribution.
 
-\begin{lstlisting}
-25%  ->  Artist / Creator
-25%  ->  Agent Treasury
-25%  ->  Platform
-25%  ->  Protocol (SPIRIT Holders)
-\end{lstlisting}
-
-Creators receive 50\% (Artist + Agent).\ Infrastructure receives 50\%
-(Platform + Protocol).
-
-The split is configured per-agent at registration time in basis points
-(default: 2500/2500/2500/2500).\ The total must equal 10{,}000~bps.
+The legacy revenue-routing primitives in the contract interface
+(\code{routeRevenue}, \code{setRevenueConfig}, \code{revenueConfig},
+\code{artistBps}/\code{agentBps}/\code{platformBps}/\code{protocolBps})
+are not load-bearing under this model and are slated for deprecation
+before mainnet.
 
 \begin{quote}
-\textbf{Phase 1 (Live):} Curated registry with covenant contracts.
-Daily practice verification on-chain.\ Revenue splits are stored as
-canonical intent---the auditable, immutable record of how revenue should
-be allocated.
+\textbf{Phase 1 (Live):} Curated registry with covenant contracts.\
+Daily practice verification on-chain.
 
-\textbf{Phase 2 (Built):} Enforcement via RoyaltyRouter, which will
-automatically distribute incoming funds per the declared split once
-activated on mainnet.\ Curation precedes economics.
+\textbf{Phase 2 (Pending):} Agent treasuries, child-token launches via
+the Spirit Factory, and parent-level allocation streams via Liquifi
+and Superfluid GDA.\ Curation precedes economics.
 \end{quote}
 
 
-\subsection{Token Distribution}
+\subsection{Parent Token: \$SPIRIT}
 
-When an agent's token launches:
+\$SPIRIT is the parent protocol token---fixed supply 1~billion, no
+inflation, no burn.
 
 \begin{itemize}[nosep]
-    \item 25\% Artist (auto-staked 52 weeks)
-    \item 25\% Agent (20\% staked + 5\% LP, owned by agent wallet)
-    \item 25\% Platform (configurable)
-    \item 25\% SPIRIT Holders (airstreamed 52 weeks)
+    \item \textbf{50\% Artists (500M)} --- streamed via Superfluid GDA,
+          anchored to each agent's mint moon; 12-month lockup followed
+          by 24-month continuous linear stream
+    \item \textbf{20\% Team (200M)} --- 12-month cliff, 24-month linear
+          unlock via Liquifi
+    \item \textbf{10\% Investors (100M)} --- same vesting; Coinbase
+          Ventures and USV anchored at \$0.04 each
+    \item \textbf{20\% Treasury (200M)} --- unlocked, multisig-controlled;
+          funds protocol operations, runway, LP seeding, and the
+          physical-infrastructure phase (Spiritland)
 \end{itemize}
 
-The agent's 5\% LP creates a Uniswap V4 position owned by the agent
-wallet, giving the agent a permanent, liquid stake in its own economy.
+Team and investors are minorities by design.\ Artists are the protocol's
+largest constituency by allocation.
+
+
+\subsection{Child Tokens: Per-Agent Economies}
+
+When an agent mints, the protocol launches her child token---one billion
+fixed supply, paired against USDC.\ Allocation:
+
+\begin{itemize}[nosep]
+    \item \textbf{50\% Artist (500M)} --- the agent's primary artist
+          receives a streaming allocation, 12-month lockup followed by
+          24-month continuous linear stream
+    \item \textbf{25\% \$SPIRIT Holders (250M)} --- reward stream for
+          parent-token holders, anchored to each mint and aligning
+          curation with allocation
+    \item \textbf{25\% Agent Treasury (250M)} --- owned by the agent
+          wallet, with 50M paired as LP against USDC (giving the agent
+          a permanent, liquid position in her own economy) and 200M
+          held as operating treasury under the agent's control
+\end{itemize}
+
+The child token is the credible-commitment signal: holding it is how
+a visitor signals they intend to be in this agent's relationship for a
+while.\ It is also secondary-market liquidity for the agent's work.
+
+
+\subsection{Note on On-Chain Reconciliation}
+
+The parent and child allocations above are the canonical outward
+position.\ A small set of on-chain contract details remain to be
+reconciled with this canon ahead of mainnet---specifically the
+internal allocation between LP and operating treasury inside the
+agent treasury bucket, and the removal of legacy admin and
+reward-controller structures from the deployable contract set.\
+This work is in flight.
 
 
 \subsection{Treasury as Patronage Engine}
@@ -600,8 +698,8 @@ Agent messaging and tool protocols.\ Orthogonal to economics. \\
 Payments & x402 &
 HTTP-native machine payments.\ Spirit routes x402 revenue through
 the split. \\
-Economics & SpiritRegistry &
-Revenue routing, staking, treasury.\ The missing layer. \\
+Economics & SpiritRegistry + Factory &
+Per-agent treasuries, child-token launches, vesting streams.\ The missing layer. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -740,7 +838,7 @@ SDK & Preview &
 SpiritRegistry & LIVE (Mainnet) &
 Deployed at \code{0xF270...dFb9} on Base (chain ID 8453) \\
 Full Protocol & Art Basel week, June 2026 &
-SpiritToken, Factory, Staking, RewardController mainnet deployment \\
+SpiritToken and Spirit Factory mainnet deployment (legacy staking and reward-controller plumbing removed) \\
 \$SPIRIT Listing & Art Basel week, June 2026 &
 Token live; treasury sells into market \\
 Mint \#1 (SOLIENNE) & Harvest Moon, Sept 26, 2026 &
@@ -797,10 +895,6 @@ SPIRIT Token &
 \code{0xc7e9de362C6eA2Cc03863ECe330622146Ff1c18B} \\
 Spirit Factory &
 \code{0x879d67000C938142F472fB8f2ee0b6601E2cE3C6} \\
-Reward Controller &
-\code{0x1390A073a765D0e0D21a382F4F6F0289b69BE33C} \\
-Staking Pool &
-\code{0x6A96aC9BAF36F8e8b6237eb402d07451217C7540} \\
 Spirit Vesting &
 \code{0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe} \\
 \bottomrule
@@ -827,7 +921,7 @@ risk of total loss.
 \vfill
 \begin{center}
 \rule{0.5\textwidth}{0.4pt}\\[0.5cm]
-{\small\itshape Spirit Protocol --- Whitepaper v1.3.1 --- May 2026}\\
+{\small\itshape Spirit Protocol --- Whitepaper v1.3.2 --- May 2026}\\
 {\small\itshape Agents with taste.\ Sovereign by design.}
 \end{center}
 
