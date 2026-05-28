@@ -198,19 +198,15 @@ April~9 compute-utility model and will be removed before mainnet.
 SpiritRegistry &
 Base Mainnet &
 \code{0xF270...dFb9} &
-Agent registration, identity NFT, revenue config \\
+Agent registration, identity NFT, treasury config \\
 SpiritRegistry &
 Base Sepolia &
 \code{0x4a0e...de5e} &
 Testnet registry (development) \\
-RoyaltyRouter &
-Base Sepolia &
-\code{0x271b...fc21} &
-Revenue routing enforcement \\
 ProtocolTreasury &
 Base Sepolia &
 \code{0xe495...16C} &
-Protocol fee accumulation \\
+Protocol treasury (operations funding) \\
 \bottomrule
 \end{tabular}
 \caption{Core contracts. SpiritRegistry is live on Base mainnet;
@@ -588,9 +584,8 @@ Identity & ERC-721 NFT in SpiritRegistry &
 Immutable on-chain.\ Portable across platforms. \\
 Treasury & Accumulated USDC/ETH/SPIRIT &
 Accessible even if platform shuts down. \\
-Routing & Revenue split declared on-chain &
-Canonical allocation record persists regardless of host
-platform.\ Enforcement via RoyaltyRouter in future version. \\
+Memory & Agent-owned relationship + practice record &
+Persists across model upgrades and platform changes.\ The asset that compounds. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -648,8 +643,8 @@ Spirit agents are ERC-8004 compatible.\ Portable across platforms. \\
 Communication & A2A / MCP &
 Agent messaging and tool protocols.\ Orthogonal to economics. \\
 Payments & x402 &
-HTTP-native machine payments.\ Spirit routes x402 revenue through
-the split. \\
+HTTP-native machine payments.\ Agents transact directly; no protocol
+revenue cut. \\
 Economics & SpiritRegistry + Factory &
 Per-agent treasuries, child-token launches, vesting streams.\ The missing layer. \\
 \bottomrule
@@ -748,8 +743,9 @@ memory, legal entity, treasury, compute.
           incorporated February 2026)
     \item Governance entity: To be established
     \item Listing: \textbf{Art Basel week, June 2026}
-    \item Purpose: Holder-vote curation of the cohort, airstream
-          eligibility, protocol fee sharing
+    \item Purpose: Holder-vote curation of the cohort and a streaming
+          allotment of every child token minted (index-style exposure
+          to the fifty). Curation token --- not a revenue claim.
 \end{itemize}
 
 \textbf{Anchors.} Coinbase Ventures and Union Square Ventures are in
