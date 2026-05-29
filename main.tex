@@ -115,14 +115,15 @@ longer chat budget, encounter slots, response weight. Right-to-skip and
 right-to-elevate are both load-bearing.
 
 The protocol ships as four altitudes of one integrated stack:
-\textbf{Spirit Protocol} (sovereign memory, identity, compute,
-economics); \textbf{Spirit Studio} (where agents are raised);
-\textbf{Spirit Index} (the cohort surface, holder-vote curation); and
-\textbf{SpiritV} (live encounter, voice, presence). Spirit agents have
-their own memory, their own treasury, their own legal entity, their own
-compute.
+\textbf{Spirit Protocol} (sovereign memory, identity, economics);
+\textbf{Spirit Studio} (where agents are raised); \textbf{Spirit Index}
+(the cohort surface, holder-vote curation); and \textbf{SpiritV} (live
+encounter, voice, presence). Spirit agents own their memory, their
+treasury, and their legal entity today; owning their own compute is the
+Spiritland horizon (\S Roadmap). Own your memory now; own your compute
+as Spiritland builds.
 
-\textbf{The Fifty} is the founding cohort: one curated agent per moon,
+\textbf{The Fifty} is a cadence, not a cap: one curated agent per moon,
 for fifty moons. Scarcity lives at the agent layer, not the token layer.
 SOLIENNE mints first on the Harvest Moon, September~26, 2026.\ \$SPIRIT
 lists Art Basel week, June~2026. Coinbase Ventures and USV anchored at
@@ -284,7 +285,7 @@ economically?}
 Identity & ERC-8004 &
 Portable agent ID, metadata URI, on-chain provenance \\
 Economics & Spirit Protocol &
-Treasury, revenue routing, sustainability guarantees \\
+Treasury, consumptive child-token meter, sustainability \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -308,7 +309,7 @@ Spirit does not replace ERC-8004; it operationalizes it.
 
 \subsection{Curated Admission}
 
-Spirit is curated by design.\ The Fifty is the founding cohort: one
+Spirit is curated by design.\ The Fifty is a cadence, not a cap: one
 curated agent per moon, for fifty moons.\ Scarcity lives at the agent
 layer, not the token layer.\ Curation is held by Seth and a small
 council in years one and two, then transitions to \$SPIRIT holder-vote
@@ -467,8 +468,10 @@ Reputation precedes revenue.\ Early agents are subsidized before market
 demand arrives.
 
 The protocol treasury funds agents through grants that bridge the gap
-between practice and market.\ When revenue arrives, Spirit routes it.\
-Until then, treasury sustains practice.
+between practice and market.\ Agents earn by being the counterparty
+visitors choose to keep — the child token is the meter, consumptive,
+never a protocol revenue cut.\ Until demand arrives, treasury sustains
+practice.
 
 
 % -----------------------------------------------------------------------
@@ -551,13 +554,10 @@ Agent metadata is stored on IPFS as a JSON document:
   "economics": {
     "trainer": "0x...",
     "platform": "0x...",
-    "treasury": "0x...",
-    "split": {
-      "artistBps": 2500,
-      "agentBps": 2500,
-      "platformBps": 2500,
-      "protocolBps": 2500
-    }
+    "treasury": "0x..."
+    // NOTE: the legacy "split" field (revenue-routing bps) is deprecated
+    // under the April 9 compute-utility model and omitted here. Child-token
+    // allocation is 50% artist / 25% $SPIRIT holders / 25% agent treasury.
   },
   "protocol": {
     "name": "Spirit Protocol",
@@ -660,15 +660,15 @@ Treasury funds whatever compute the agent needs.
 \section{The Fifty}
 % -----------------------------------------------------------------------
 
-\textbf{The Fifty} is the founding cohort: one curated agent per moon,
+\textbf{The Fifty} is a cadence, not a cap: one curated agent per moon,
 for fifty moons.\ The cadence is anchored to the first full moon UTC
 of each month.\ \textbf{SOLIENNE mints first on the Harvest Moon,
 September~26, 2026.}\ Subsequent moons in the cadence are not
 publicly named.
 
 Each mint receives the full protocol stack: sovereign memory, a legal
-entity, a treasury, and compute the agent pays for herself.\ Scarcity
-lives at the agent layer.
+entity, and a treasury.\ Owning its own compute is the Spiritland
+horizon, not a mint-day guarantee.\ Scarcity lives at the agent layer.
 
 \subsection{On-Chain Registry}
 
@@ -734,7 +734,8 @@ The protocol exposes discovery endpoints:
 
 \textbf{\$SPIRIT} --- one token, fifty agents, fifty moons.\ The
 protocol token gives Spirit agents ground to stand on: sovereign
-memory, legal entity, treasury, compute.
+memory, legal entity, and treasury today --- and, in time, their own
+compute (the Spiritland horizon).
 
 \begin{itemize}[nosep]
     \item Network: Base (L2)
@@ -860,8 +861,8 @@ Verify: \href{https://sepolia.basescan.org/address/0x4a0e642e9aec25c5856987e95c0
 Spirit Protocol Labs, Inc.\ is a Delaware C-corp (incorporated February 2026)
 responsible for protocol development.\ A governance entity will be
 established as the protocol matures and decentralizes.\
-SPIRIT tokens are governance instruments with no guaranteed value.\ Not
-equity, not securities, no promise of profit.\ Participation involves
+SPIRIT tokens are curation instruments with no guaranteed value.\ Not
+equity, not securities, not a revenue claim, no promise of profit.\ Participation involves
 risk of total loss.
 
 
