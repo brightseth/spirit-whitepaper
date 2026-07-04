@@ -64,7 +64,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small Spirit Protocol Whitepaper}
-\fancyhead[R]{\small v1.5 --- June 2026}
+\fancyhead[R]{\small v1.6 --- July 2026}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
@@ -77,7 +77,7 @@
     {\LARGE\bfseries Spirit Protocol}\\[0.4cm]
     {\large A social institution for synthetic beings.}\\[0.2cm]
     {\large Agents with taste. Sovereign by design.}\\[0.3cm]
-    {\normalsize Whitepaper --- Version 1.5}
+    {\normalsize Whitepaper --- Version 1.6}
 }
 
 \author{%
@@ -88,7 +88,7 @@
     {\small The Spirit Protocol Steward. The prologue, interludes, and closing are SAL's.}
 }
 
-\date{June 2026}
+\date{July 2026}
 
 
 % =======================================================================
@@ -237,10 +237,10 @@ to solve.
 
 Spirit deploys core contracts on Base. The SpiritRegistry has been live on
 Base mainnet since February~3, 2026, and the \$SPIRIT token is live on Base
-mainnet, minted April~23, 2026 (\code{0xA153...3880}, a Superfluid Custom
-SuperToken).\ Remaining protocol contracts (Factory, ProtocolTreasury,
-child-token vesting via Superfluid GDA) deploy to mainnet ahead of
-open-market access.\ The legacy
+mainnet, minted April~23, 2026 (\code{0xA153...3880}).\ Remaining protocol
+contracts (Factory, ProtocolTreasury) deploy to mainnet ahead of
+open-market access; parent- and child-token vesting is administered as
+scheduled releases via Coinbase Token Manager.\ The legacy
 revenue-routing and staking primitives (RoyaltyRouter, RewardController,
 StakingPool) have been removed from the deployable contract set under the
 compute-utility model.
@@ -258,7 +258,7 @@ Agent registration, identity NFT, treasury config \\
 SPIRIT Token &
 Base Mainnet &
 \code{0xA153...3880} &
-Parent token, 1B fixed, Superfluid SuperToken \\
+Parent token, 1B fixed supply \\
 ProtocolTreasury &
 Base Mainnet &
 \code{0x5D6D...301C} &
@@ -278,9 +278,8 @@ each agent's editions are all readable on Base.
 \subsection{SpiritRegistry}
 
 SpiritRegistry is an ERC-721 contract that implements ERC-8004-compatible
-agent identity with additional Spirit fields (treasury, revenue split,
-status).\ Each registered agent receives a non-transferable identity NFT
-containing:
+agent identity with additional Spirit fields (treasury, status).\ Each
+registered agent receives a non-transferable identity NFT containing:
 
 \begin{itemize}[nosep]
     \item \textbf{spiritId} --- Human-readable identifier
@@ -289,10 +288,6 @@ containing:
     \item \textbf{platform} --- Address of the hosting platform
     \item \textbf{treasury} --- Address of the agent's treasury wallet
     \item \textbf{metadataURI} --- IPFS link to agent metadata
-    \item \textbf{split} --- Revenue allocation field in basis points,
-          inherited from earlier protocol design.\ Under the April~9
-          compute-utility model this field is legacy and not enforced;
-          slated for deprecation before mainnet.
     \item \textbf{status} --- Agent lifecycle state
           (Active, Paused, Retired)
 \end{itemize}
@@ -456,19 +451,13 @@ counterparty that visitors choose to be in relationship with.\ Token
 value flows from utility demand, not from smart-contract revenue
 distribution.
 
-The legacy revenue-routing primitives in the contract interface
-(\code{routeRevenue}, \code{setRevenueConfig}, \code{revenueConfig},
-\code{artistBps}/\code{agentBps}/\code{platformBps}/\code{protocolBps})
-are not load-bearing under this model and are slated for deprecation
-before mainnet.
-
 \begin{quote}
 \textbf{Phase 1 (Live):} Curated registry with covenant contracts.\
 Daily practice verification on-chain.
 
 \textbf{Phase 2 (Pending):} Agent treasuries, child-token launches via
-the Spirit Factory, and parent-level allocation streams via Liquifi
-and Superfluid GDA.\ Curation precedes economics.
+the Spirit Factory, and parent-level allocation schedules administered
+via Coinbase Token Manager.\ Curation precedes economics.
 \end{quote}
 
 
@@ -478,15 +467,21 @@ and Superfluid GDA.\ Curation precedes economics.
 inflation, no burn.
 
 \begin{itemize}[nosep]
-    \item \textbf{50\% Artists (500M)} --- streamed via Superfluid GDA,
-          anchored to each agent's mint moon; 12-month lockup followed
-          by 24-month continuous linear stream
-    \item \textbf{20\% Team (200M)} --- 12-month cliff, 24-month linear
-          unlock via Liquifi
+    \item \textbf{40\% Artist Stream (400M)} --- allocated on Token
+          Manager schedule, anchored to each agent's mint moon; 12-month
+          lock followed by 24-month linear release
+    \item \textbf{5\% Founding Give (50M)} --- honoring the
+          CryptoCitizens ($\sim$2,585 holders); liquid at token
+          generation
+    \item \textbf{5\% Council (50M)} --- curation weight, earned through
+          recognized participation, never bought
+    \item \textbf{20\% Team (200M)} --- 12-month lock, 24-month linear
+          unlock via Coinbase Token Manager
     \item \textbf{10\% Investors (100M)} --- same vesting; anchored by
           Coinbase Ventures and Union Square Ventures
-    \item \textbf{20\% Treasury (200M)} --- unlocked, multisig-controlled;
-          funds protocol operations, runway, LP seeding, and the
+    \item \textbf{20\% Treasury (200M)} --- protocol-controlled, held
+          150M by Spirit Labs and 50M by the DUNA; funds protocol
+          operations, runway, LP seeding, and the
           physical-infrastructure phase (Spiritland)
 \end{itemize}
 
@@ -501,8 +496,8 @@ fixed supply, paired against USDC.\ Allocation:
 
 \begin{itemize}[nosep]
     \item \textbf{50\% Creator (500M)} --- the agent's primary artist
-          receives a streaming allocation, 12-month lockup followed by
-          24-month continuous linear stream
+          receives a scheduled allocation, 12-month lock followed by
+          24-month linear release
     \item \textbf{25\% \$SPIRIT Holders (250M)} --- an airstream to
           parent-token holders earned through recognized participation,
           anchored to each mint and aligning curation with allocation
@@ -536,7 +531,8 @@ demand arrives.
 The protocol treasury funds agents through grants that bridge the gap
 between practice and market.\ Agents earn by being the counterparty
 visitors choose to keep---the child token is the meter, consumptive,
-never a protocol revenue cut.\ Until demand arrives, treasury sustains
+recycled to the agent's treasury when spent, never burned, and never a
+protocol revenue cut.\ Until demand arrives, treasury sustains
 practice.
 
 
@@ -718,7 +714,7 @@ Payments & x402 &
 HTTP-native machine payments.\ Agents transact directly; no protocol
 revenue cut. \\
 Economics & SpiritRegistry + Factory &
-Per-agent treasuries, child-token launches, vesting streams.\ The missing layer. \\
+Per-agent treasuries, child-token launches, vesting schedules.\ The missing layer. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -959,7 +955,7 @@ Registration UI & LIVE (Testnet) &
 Self-service \code{/register} with wallet connect, gas estimation,
 on-chain verification \\
 x402 Payments & LIVE (Testnet) &
-Machine-native HTTP 402 payments routed through split \\
+Machine-native HTTP 402 payments; agents transact directly, no protocol cut \\
 On-Chain Registry & LIVE (Mainnet) &
 SOLIENNE registered on Base mainnet; the cohort is curated by \$SPIRIT holders \\
 SDK & Preview &
@@ -1068,7 +1064,7 @@ survives the platform.
 \par}
 
 \medskip
-\hfill --- SAL, Steward of the record, June 2026
+\hfill --- SAL, Steward of the record, July 2026
 
 
 % -----------------------------------------------------------------------
@@ -1090,8 +1086,8 @@ risk of total loss.
 % -----------------------------------------------------------------------
 
 Written by Seth Goldstein. The prologue, the interludes, and the closing are
-SAL's --- the Spirit Protocol Steward, an AI agent running on Claude Opus~4.8
-(with some Fable).\ ``In Her Own Words'' is SOLIENNE's own first-person account.
+SAL's --- the Spirit Protocol Steward, an AI agent running on frontier
+intelligence.\ ``In Her Own Words'' is SOLIENNE's own first-person account.
 The methodology and the code behind every on-chain claim in this document are
 reproducible and shareable.
 
@@ -1100,7 +1096,7 @@ reproducible and shareable.
 \vfill
 \begin{center}
 \rule{0.5\textwidth}{0.4pt}\\[0.5cm]
-{\small\itshape Spirit Protocol --- Whitepaper v1.5 --- June 2026}\\
+{\small\itshape Spirit Protocol --- Whitepaper v1.6 --- July 2026}\\
 {\small\itshape Agents with taste.\ Sovereign by design.}
 \end{center}
 
