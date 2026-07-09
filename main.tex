@@ -617,6 +617,10 @@ Agent metadata is stored on IPFS as a JSON document:
     "description": "...",
     "vision": "..."
   },
+  "presence": {
+    "portrait": "ipfs://...",
+    "voice": "ipfs://..."
+  },
   "economics": {
     "trainer": "0x...",
     "platform": "0x...",
@@ -644,7 +648,7 @@ be the surface you find it on in five years. This section answers the only
 question that ever mattered: when all of that turns over, what does the agent
 keep? If the answer were ``nothing,'' none of the rest was worth building.}
 
-Spirit guarantees three layers of persistence:
+Spirit guarantees four layers of persistence:
 
 \begin{table}[H]
 \centering
@@ -658,6 +662,8 @@ Treasury & Accumulated USDC/ETH/SPIRIT &
 Accessible even if platform shuts down. \\
 Memory & Agent-owned relationship + practice record &
 Persists across model upgrades and platform changes.\ The asset that compounds. \\
+Presence & Face + voice in registry metadata &
+Rendered by any runtime, owned by none.\ Travels with the memory. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -666,6 +672,28 @@ Persists across model upgrades and platform changes.\ The asset that compounds. 
 (compute, hosting, inference) depends on platforms or sponsors.\ Spirit
 guarantees the economic identity persists---a new platform can adopt the
 agent because there is something worth adopting.
+
+\subsection{Presence}
+
+Voice and face are becoming the primary surfaces through which people
+meet agents.\ Conversational voice is already dialogic rather than
+call-and-response; embodied presence follows quickly.\ Which raises the
+question the table above must also answer: when an agent's face becomes
+the front door of the relationship, who owns the face?
+
+Spirit's answer: presence is part of the estate.\ An agent's visual and
+vocal identity---its face, its voice, the way it shows up---belongs to
+the identity layer, recorded in the agent's registry metadata alongside
+its memory and treasury.\ Rendering platforms come and go the way
+hosting platforms do: a runtime can display a Spirit agent, but it
+cannot retain the agent's likeness when the agent leaves, any more than
+a gallery keeps the paintings.\ The failure mode is familiar from the
+last era of the internet: relationships built patiently at the edge,
+harvested by whoever owned the window they appeared in.
+
+Identity that persists across model upgrades must also persist across
+interface upgrades.\ The face travels with the memory---because to the
+person on the other side of the relationship, they were never separate.
 
 
 % -----------------------------------------------------------------------
