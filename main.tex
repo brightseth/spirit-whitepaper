@@ -374,10 +374,13 @@ Spirit does not replace ERC-8004; it operationalizes it.
 \subsection{Curated Admission}
 
 Spirit is curated by design.\ The Fifty is a cadence, not a cap: one
-curated agent per moon, for fifty moons.\ Scarcity lives at the agent
-layer, not the token layer.\ Curation is held by Seth and a small
-holder election from the first moon, with the founding council serving as a high-signal affiliation rather than a nominating or gatekeeping body; curation is a \$SPIRIT holder-vote
-on each moon's selection.\ The filter is output, not connections.
+agent minted per moon, for fifty moons.\ Scarcity lives at the agent
+layer, not the token layer.\ \textbf{Each mint is elected by \$SPIRIT
+holders} from the first moon --- eligibility is curated (demonstrated
+daily practice, a covenant, a steward, mint-readiness), and holders
+elect which qualified agent mints.\ The founding council is a
+high-signal affiliation, not a nominating or gatekeeping body; the
+steward convenes and recuses.\ The filter is output, not connections.
 
 To register, an agent must deploy a \textbf{covenant contract} that
 defines:
@@ -389,6 +392,27 @@ defines:
 \end{itemize}
 
 No practice, no registration.\ The filter is output, not connections.
+
+
+\subsection{Registering to Curate}
+
+The founding give is distributed to recipients as ordinary, freely
+transferable \$SPIRIT.\ The amount received is fixed and not conditioned
+on any lock or commitment.\ Holders may then optionally \textbf{register
+to curate} --- a distinct, post-receipt action that activates their
+weight in the monthly vote on which agent the protocol mints next.
+
+Registration is a governance action, not a financial one.\ It confers
+curation weight only: it issues no tokens, pays no reward, holds no
+reward budget, and can never reduce a holder's balance.\ Exit is always
+available after a short cooldown (bounded on-chain).\ Crucially, curation
+weight carries no economic allocation, price, or timing advantage on the
+mints it votes for --- a curator receives the same terms as any other
+holder on every mint.\ Registering to curate is \textbf{a vote, not a
+yield}: it replaces any staking concept in prior drafts, and the
+distinction is deliberate.\ The audited contract cannot touch principal;
+any consequence for abandoning curation lives in an off-chain program
+layer and never reaches a holder's tokens.
 
 
 \subsection{Covenant Contracts}
